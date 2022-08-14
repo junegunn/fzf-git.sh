@@ -25,19 +25,28 @@ if [[ $- =~ i ]]; then
 
 # Redefine this function to change the options
 _fzf_git_fzf() {
-  fzf-tmux -p80%,60% --layout=reverse --multi --height 50% --min-height 20 --border --bind ctrl-/:toggle-preview "$@"
+  fzf-tmux -p80%,60% -- \
+    --layout=reverse --multi --height=50% --min-height=20 --border \
+    --preview-window='right,50%,border-left' \
+    --bind='ctrl-/:change-preview-window(down,50%,border-top|hidden|)' "$@"
 }
 
 _fzf_git_check() {
-  git rev-parse HEAD > /dev/null 2>&1
+  git rev-parse HEAD > /dev/null 2>&1 && return
+
+  [[ -n $TMUX ]] && tmux display-message "Not in a git repository"
+  return 1
 }
 
-# Sometimes bat is installed as batcat
-export _fzf_git_cat=cat
-if command -v batcat > /dev/null; then
-  _fzf_git_cat="batcat --style='${BAT_STYLE:-numbers}' --color=always --pager=never"
-elif command -v bat > /dev/null; then
-  _fzf_git_cat="bat --style='${BAT_STYLE:-numbers}' --color=always --pager=never"
+if [[ -z $_fzf_git_cat ]]; then
+  # Sometimes bat is installed as batcat
+  export _fzf_git_cat="cat"
+  _fzf_git_bat_options="--style='${BAT_STYLE:-full}' --color=always --pager=never"
+  if command -v batcat > /dev/null; then
+    _fzf_git_cat="batcat $_fzf_git_bat_options"
+  elif command -v bat > /dev/null; then
+    _fzf_git_cat="bat $_fzf_git_bat_options"
+  fi
 fi
 
 _fzf_git_files() {
@@ -45,7 +54,7 @@ _fzf_git_files() {
   (git -c color.status=always status --short
    git ls-files | grep -vf <(git status -s | grep '^[^?]' | cut -c4-) | sed 's/^/   /') |
   _fzf_git_fzf -m --ansi --nth 2..,.. \
-    --prompt 'Git Files> ' \
+    --prompt '📁 Files> ' \
     --preview "git diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" |
   cut -c4- | sed 's/.* -> //'
 }
@@ -54,7 +63,7 @@ _fzf_git_branches() {
   _fzf_git_check || return
   git branch -a --color=always | grep -v '/HEAD\s' | sort |
   _fzf_git_fzf --ansi --tac --preview-window right,70% \
-    --prompt 'Git Branches> ' \
+    --prompt '🌵 Branches> ' \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1)' |
   sed 's/^..//' | cut -d' ' -f1 |
   sed 's#^remotes/##'
@@ -64,7 +73,7 @@ _fzf_git_tags() {
   _fzf_git_check || return
   git tag --sort -version:refname |
   _fzf_git_fzf --preview-window right,70% \
-    --prompt 'Git Tags> ' \
+    --prompt '📛 Tags> ' \
     --preview 'git show --color=always {}'
 }
 
@@ -72,7 +81,7 @@ _fzf_git_hashes() {
   _fzf_git_check || return
   git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
   _fzf_git_fzf --ansi --no-sort --bind 'ctrl-s:toggle-sort' \
-    --prompt 'Git Hashes> ' \
+    --prompt '🍡 Hashes> ' \
     --header 'Press CTRL-S to toggle sort' \
     --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always' |
   grep -o "[a-f0-9]\{7,\}"
@@ -82,7 +91,8 @@ _fzf_git_remotes() {
   _fzf_git_check || return
   git remote -v | awk '{print $1 "\t" $2}' | uniq |
   _fzf_git_fzf --tac \
-    --prompt 'Git Remotes> ' \
+    --prompt '📡 Remotes> ' \
+    --preview-window right,70% \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {1}/"$(git rev-parse --abbrev-ref HEAD)"' |
   cut -d$'\t' -f1
 }
@@ -90,7 +100,7 @@ _fzf_git_remotes() {
 _fzf_git_stashes() {
   _fzf_git_check || return
   git stash list | _fzf_git_fzf \
-    --prompt 'Git Stashes> ' \
+    --prompt '🥡 Stashes> ' \
     -d: --preview 'git show --color=always {1}' |
   cut -d: -f1
 }

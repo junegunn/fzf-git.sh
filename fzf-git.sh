@@ -105,6 +105,13 @@ _fzf_git_stashes() {
   cut -d: -f1
 }
 
+_fzf_git_browse() {
+  _fzf_git_check || return
+  git ls-files --full |
+    _fzf_git_fzf --tac --prompt '🌐 Browse> ' --preview "git diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" |
+    xargs -L1 git browse origin 
+}
+
 if [[ -n $BASH_VERSION ]]; then
   bind '"\er": redraw-current-line'
   bind '"\C-g\C-f": "$(_fzf_git_files)\e\C-e\er"'
@@ -113,6 +120,7 @@ if [[ -n $BASH_VERSION ]]; then
   bind '"\C-g\C-h": "$(_fzf_git_hashes)\e\C-e\er"'
   bind '"\C-g\C-r": "$(_fzf_git_remotes)\e\C-e\er"'
   bind '"\C-g\C-s": "$(_fzf_git_stashes)\e\C-e\er"'
+  bind '"\C-g\C-w": "$(_fzf_git_browse)\e\C-e\er"'
 elif [[ -n $ZSH_VERSION ]]; then
   _fzf_git_join() {
     local item

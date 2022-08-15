@@ -23,7 +23,7 @@ Usage
     * <kbd>CTRL-G</kbd><kbd>CTRL-R</kbd> for **R**emotes
     * <kbd>CTRL-G</kbd><kbd>CTRL-H</kbd> for commit **H**ashes
     * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
-* fzf bindings
+* Inside fzf
     * <kbd>TAB</kbd> or <kbd>SHIFT-TAB</kbd> to select multiple objects
     * <kbd>CTRL-/</kbd> to change preview window layout
     * <kbd>CTRL-O</kbd> to open the object in the web browser (in GitHub URL scheme)

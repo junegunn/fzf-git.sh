@@ -14,12 +14,17 @@ Installation
 Usage
 -----
 
-* <kbd>CTRL-G</kbd><kbd>CTRL-F</kbd> for **F**iles
-* <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> for **B**ranches
-* <kbd>CTRL-G</kbd><kbd>CTRL-T</kbd> for **T**ags
-* <kbd>CTRL-G</kbd><kbd>CTRL-R</kbd> for **R**emotes
-* <kbd>CTRL-G</kbd><kbd>CTRL-H</kbd> for commit **H**ashes
-* <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
+* List of bindings
+    * <kbd>CTRL-G</kbd><kbd>CTRL-F</kbd> for **F**iles
+    * <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> for **B**ranches
+    * <kbd>CTRL-G</kbd><kbd>CTRL-T</kbd> for **T**ags
+    * <kbd>CTRL-G</kbd><kbd>CTRL-R</kbd> for **R**emotes
+    * <kbd>CTRL-G</kbd><kbd>CTRL-H</kbd> for commit **H**ashes
+    * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
+* fzf bindings
+    * <kbd>TAB</kbd> or <kbd>SHIFT-TAB</kbd> to select multiple objects
+    * <kbd>CTRL-/</kbd> to change preview window layout
+    * <kbd>CTRL-O</kbd> to open the object in the web browser (in GitHub URL scheme)
 
 Customization
 -------------

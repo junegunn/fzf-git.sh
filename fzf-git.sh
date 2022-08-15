@@ -20,6 +20,51 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+if [[ $# -gt 1 ]]; then
+  set -e
+
+  branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
+  if [[ $branch = HEAD ]]; then
+    branch=$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
+  fi
+
+  # Only supports GitHub for now
+  case "$1" in
+    commit)
+      hash=$(grep -o "[a-f0-9]\{7,\}" <<< "$2")
+      path=/commit/$hash
+      ;;
+    branch)
+      branch=$(sed 's/^..//' <<< "$2" | cut -d' ' -f1)
+      path=/tree/$branch
+      ;;
+    remote)
+      remote=$2
+      path=/tree/$branch
+      ;;
+    file) path=/blob/$branch/$2 ;;
+    tag)  path=/releases/tag/$2 ;;
+    *)    exit 1 ;;
+  esac
+
+  remote=${remote:-$(git config branch."${branch}".remote || echo 'origin')}
+  remote_url=$(git remote get-url "$remote")
+
+  if [[ $remote_url =~ ^git@ ]]; then
+    url=${remote_url%.git}
+    url=${url#git@}
+    url=https://${url/://}
+  elif [[ $remote_url =~ ^http ]]; then
+    url=${remote_url%.git}
+  fi
+
+  case "$(uname -s)" in
+    Darwin) open "$url$path"     ;;
+    *)      xdg-open "$url$path" ;;
+  esac
+  exit 0
+fi
+
 if [[ $- =~ i ]]; then
 # -----------------------------------------------------------------------------
 
@@ -38,6 +83,8 @@ _fzf_git_check() {
   return 1
 }
 
+_fzf_git=$(readlink -f ${BASH_SOURCE[0]:-${(%):-%x}})
+
 if [[ -z $_fzf_git_cat ]]; then
   # Sometimes bat is installed as batcat
   export _fzf_git_cat="cat"
@@ -55,6 +102,7 @@ _fzf_git_files() {
    git ls-files | grep -vf <(git status -s | grep '^[^?]' | cut -c4-) | sed 's/^/   /') |
   _fzf_git_fzf -m --ansi --nth 2..,.. \
     --prompt '📁 Files> ' \
+    --bind "ctrl-o:execute-silent:bash $_fzf_git file {-1}" \
     --preview "git diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" |
   cut -c4- | sed 's/.* -> //'
 }
@@ -64,6 +112,7 @@ _fzf_git_branches() {
   git branch -a --color=always | grep -v '/HEAD\s' | sort |
   _fzf_git_fzf --ansi --tac --preview-window right,70% \
     --prompt '🌵 Branches> ' \
+    --bind "ctrl-o:execute-silent:bash $_fzf_git branch {}" \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1)' |
   sed 's/^..//' | cut -d' ' -f1 |
   sed 's#^remotes/##'
@@ -74,6 +123,7 @@ _fzf_git_tags() {
   git tag --sort -version:refname |
   _fzf_git_fzf --preview-window right,70% \
     --prompt '📛 Tags> ' \
+    --bind "ctrl-o:execute-silent:bash $_fzf_git tag {}" \
     --preview 'git show --color=always {}'
 }
 
@@ -82,6 +132,7 @@ _fzf_git_hashes() {
   git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
   _fzf_git_fzf --ansi --no-sort --bind 'ctrl-s:toggle-sort' \
     --prompt '🍡 Hashes> ' \
+    --bind "ctrl-o:execute-silent:bash $_fzf_git commit {}" \
     --header 'Press CTRL-S to toggle sort' \
     --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always' |
   grep -o "[a-f0-9]\{7,\}"
@@ -92,6 +143,7 @@ _fzf_git_remotes() {
   git remote -v | awk '{print $1 "\t" $2}' | uniq |
   _fzf_git_fzf --tac \
     --prompt '📡 Remotes> ' \
+    --bind "ctrl-o:execute-silent:bash $_fzf_git remote {1}" \
     --preview-window right,70% \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {1}/"$(git rev-parse --abbrev-ref HEAD)"' |
   cut -d$'\t' -f1

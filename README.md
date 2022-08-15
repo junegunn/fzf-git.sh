@@ -9,7 +9,9 @@ Installation
 ------------
 
 1. Install the latest version of [fzf][fzf]
-2. Source [fzf-git.sh](fzf-git.sh) file from your .bashrc or .zshrc.
+    * (Optional) Install [bat](https://github.com/sharkdp/bat) for
+      syntax-highlighted file previews
+1. Source [fzf-git.sh](fzf-git.sh) file from your .bashrc or .zshrc
 
 Usage
 -----

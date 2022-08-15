@@ -107,9 +107,11 @@ _fzf_git_stashes() {
 
 _fzf_git_browse() {
   _fzf_git_check || return
+  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+  remote=$(git config branch."${branch}".remote || echo "origin")
   git ls-files --full |
     _fzf_git_fzf --tac --prompt '🌐 Browse> ' --preview "git diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" |
-    xargs -L1 git browse origin 
+    xargs -L1 git browse "${remote}" 
 }
 
 if [[ -n $BASH_VERSION ]]; then

@@ -103,7 +103,7 @@ _fzf_git_files() {
   _fzf_git_fzf -m --ansi --nth 2..,.. \
     --prompt '📁 Files> ' \
     --bind "ctrl-o:execute-silent:bash $_fzf_git file {-1}" \
-    --preview "git diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" |
+    --preview "git diff --no-ext-diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" |
   cut -c4- | sed 's/.* -> //'
 }
 

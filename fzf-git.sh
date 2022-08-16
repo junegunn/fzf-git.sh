@@ -83,7 +83,7 @@ _fzf_git_check() {
   return 1
 }
 
-_fzf_git=$(readlink -f ${BASH_SOURCE[0]:-${(%):-%x}})
+__fzf_git=$(readlink -f ${BASH_SOURCE[0]:-${(%):-%x}})
 
 if [[ -z $_fzf_git_cat ]]; then
   # Sometimes bat is installed as batcat
@@ -102,7 +102,7 @@ _fzf_git_files() {
    git ls-files | grep -vf <(git status -s | grep '^[^?]' | cut -c4-) | sed 's/^/   /') |
   _fzf_git_fzf -m --ansi --nth 2..,.. \
     --prompt '📁 Files> ' \
-    --bind "ctrl-o:execute-silent:bash $_fzf_git file {-1}" \
+    --bind "ctrl-o:execute-silent:bash $__fzf_git file {-1}" \
     --preview "git diff --no-ext-diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" |
   cut -c4- | sed 's/.* -> //'
 }
@@ -112,7 +112,7 @@ _fzf_git_branches() {
   git branch -a --color=always | grep -v '/HEAD\s' | sort |
   _fzf_git_fzf --ansi --tac --preview-window right,70% \
     --prompt '🌵 Branches> ' \
-    --bind "ctrl-o:execute-silent:bash $_fzf_git branch {}" \
+    --bind "ctrl-o:execute-silent:bash $__fzf_git branch {}" \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1)' |
   sed 's/^..//' | cut -d' ' -f1 |
   sed 's#^remotes/##'
@@ -123,7 +123,7 @@ _fzf_git_tags() {
   git tag --sort -version:refname |
   _fzf_git_fzf --preview-window right,70% \
     --prompt '📛 Tags> ' \
-    --bind "ctrl-o:execute-silent:bash $_fzf_git tag {}" \
+    --bind "ctrl-o:execute-silent:bash $__fzf_git tag {}" \
     --preview 'git show --color=always {}'
 }
 
@@ -132,7 +132,7 @@ _fzf_git_hashes() {
   git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
   _fzf_git_fzf --ansi --no-sort --bind 'ctrl-s:toggle-sort' \
     --prompt '🍡 Hashes> ' \
-    --bind "ctrl-o:execute-silent:bash $_fzf_git commit {}" \
+    --bind "ctrl-o:execute-silent:bash $__fzf_git commit {}" \
     --header 'Press CTRL-S to toggle sort' \
     --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always' |
   grep -o "[a-f0-9]\{7,\}"
@@ -143,7 +143,7 @@ _fzf_git_remotes() {
   git remote -v | awk '{print $1 "\t" $2}' | uniq |
   _fzf_git_fzf --tac \
     --prompt '📡 Remotes> ' \
-    --bind "ctrl-o:execute-silent:bash $_fzf_git remote {1}" \
+    --bind "ctrl-o:execute-silent:bash $__fzf_git remote {1}" \
     --preview-window right,70% \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {1}/"$(git rev-parse --abbrev-ref HEAD)"' |
   cut -d$'\t' -f1
@@ -166,22 +166,22 @@ if [[ -n $BASH_VERSION ]]; then
   bind '"\C-g\C-r": "$(_fzf_git_remotes)\e\C-e\er"'
   bind '"\C-g\C-s": "$(_fzf_git_stashes)\e\C-e\er"'
 elif [[ -n $ZSH_VERSION ]]; then
-  _fzf_git_join() {
+  __fzf_git_join() {
     local item
     while read item; do
       echo -n "${(q)item} "
     done
   }
 
-  _fzf_git_init() {
+  __fzf_git_init() {
     local o
     for o in $@; do
-      eval "fzf-git-$o-widget() { local result=\$(_fzf_git_$o | _fzf_git_join); zle reset-prompt; LBUFFER+=\$result }"
+      eval "fzf-git-$o-widget() { local result=\$(_fzf_git_$o | __fzf_git_join); zle reset-prompt; LBUFFER+=\$result }"
       eval "zle -N fzf-git-$o-widget"
       eval "bindkey '^g^${o[1]}' fzf-git-$o-widget"
     done
   }
-  _fzf_git_init files branches tags remotes hashes stashes
+  __fzf_git_init files branches tags remotes hashes stashes
 fi
 
 # -----------------------------------------------------------------------------

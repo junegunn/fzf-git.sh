@@ -118,8 +118,7 @@ _fzf_git_branches() {
     --header $'CTRL-O (open in browser)\n\n' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git branch {}" \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1)' |
-  sed 's/^..//' | cut -d' ' -f1 |
-  sed 's#^remotes/##'
+  sed 's/^..//' | cut -d' ' -f1
 }
 
 _fzf_git_tags() {

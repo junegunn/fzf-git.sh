@@ -48,7 +48,7 @@ if [[ $# -gt 1 ]]; then
   esac
 
   remote=${remote:-$(git config branch."${branch}".remote || echo 'origin')}
-  remote_url=$(git remote get-url "$remote")
+  remote_url=$(git remote get-url "$remote" 2> /dev/null || echo "$remote")
 
   if [[ $remote_url =~ ^git@ ]]; then
     url=${remote_url%.git}

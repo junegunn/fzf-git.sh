@@ -20,7 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-if [[ $# -gt 1 ]]; then
+if [[ $# -eq 1 ]]; then
+  branches() {
+    git branch "$@" --sort=committerdate --sort=HEAD --format='%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))|%(color:blue)%(subject)%(color:reset)' --color=always | column -ts'|'
+  }
+  case "$1" in
+    branches)
+      echo $'CTRL-O (open in browser) ╱ CTRL-A (show all branches)\n'
+      branches
+      ;;
+    all-branches)
+      echo $'CTRL-O (open in browser)\n'
+      branches -a
+      ;;
+    *) exit 1 ;;
+  esac
+elif [[ $# -gt 1 ]]; then
   set -e
 
   branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
@@ -36,6 +51,8 @@ if [[ $# -gt 1 ]]; then
       ;;
     branch)
       branch=$(sed 's/^..//' <<< "$2" | cut -d' ' -f1)
+      remote=$(git config branch."${branch}".remote || echo 'origin')
+      branch=${branch#$remote/}
       path=/tree/$branch
       ;;
     remote)
@@ -112,11 +129,15 @@ _fzf_git_files() {
 
 _fzf_git_branches() {
   _fzf_git_check || return
-  git branch -a --color=always | grep -v '/HEAD\s' | sort |
-  _fzf_git_fzf --ansi --tac --preview-window right,70% \
-    --prompt '🌵 Branches> ' \
-    --header $'CTRL-O (open in browser)\n\n' \
+  bash "$__fzf_git" branches |
+  _fzf_git_fzf --ansi --tac \
+    --prompt '🌲 Branches> ' \
+    --header-lines 2 \
+    --tiebreak begin \
+    --preview-window down,border-top,40% \
+    --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git branch {}" \
+    --bind "ctrl-a:change-prompt(🌳 All branches> )+reload:bash \"$__fzf_git\" all-branches" \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1)' |
   sed 's/^..//' | cut -d' ' -f1
 }

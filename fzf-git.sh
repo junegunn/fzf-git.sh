@@ -22,7 +22,7 @@
 
 if [[ $# -eq 1 ]]; then
   branches() {
-    git branch "$@" --sort=committerdate --sort=HEAD --format='%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))|%(color:blue)%(subject)%(color:reset)' --color=always | column -ts'|'
+    git branch "$@" --sort=committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always | column -ts$'\t'
   }
   case "$1" in
     branches)

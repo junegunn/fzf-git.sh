@@ -3,6 +3,8 @@ fzf-git.sh
 
 bash and zsh key bindings for Git objects, powered by [fzf][fzf].
 
+<img width="1680" alt="image" src="https://user-images.githubusercontent.com/700826/185568470-20d70937-eea4-4274-aec5-14dfe7ee2de6.png">
+
 Each binding will allow you to browse through Git objects of a certain type,
 and select the objects you want to paste to your command-line.
 

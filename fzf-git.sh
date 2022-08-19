@@ -135,6 +135,7 @@ _fzf_git_branches() {
     --header-lines 2 \
     --tiebreak begin \
     --preview-window down,border-top,40% \
+    --color hl:underline,hl+:underline \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git branch {}" \
     --bind "ctrl-a:change-prompt(🌳 All branches> )+reload:bash \"$__fzf_git\" all-branches" \

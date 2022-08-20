@@ -46,3 +46,16 @@ _fzf_git_fzf() {
     --bind='ctrl-/:change-preview-window(down,50%,border-top|hidden|)' "$@"
 }
 ```
+
+Defining shortcut commands
+--------------------------
+
+Each binding is backed by `_fzf_git_*` function so you can do something like
+this.
+
+```sh
+gco() {
+  local selected=$(_fzf_git_branches --no-multi)
+  [ -n "$selected" ] && git checkout "$selected"
+}
+```

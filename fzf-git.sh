@@ -123,7 +123,7 @@ _fzf_git_files() {
     --header $'CTRL-O (open in browser) ╱ CTRL-E (open in editor)\n\n' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git file {-1}" \
     --bind "ctrl-e:execute:${EDITOR:-vim} {-1} > /dev/tty" \
-    --preview "git diff --no-ext-diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" |
+    --preview "git diff --no-ext-diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" "$@" |
   cut -c4- | sed 's/.* -> //'
 }
 
@@ -139,7 +139,7 @@ _fzf_git_branches() {
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git branch {}" \
     --bind "ctrl-a:change-prompt(🌳 All branches> )+reload:bash \"$__fzf_git\" all-branches" \
-    --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1)' |
+    --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1)' "$@" |
   sed 's/^..//' | cut -d' ' -f1
 }
 
@@ -150,7 +150,7 @@ _fzf_git_tags() {
     --prompt '📛 Tags> ' \
     --header $'CTRL-O (open in browser)\n\n' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git tag {}" \
-    --preview 'git show --color=always {}'
+    --preview 'git show --color=always {}' "$@"
 }
 
 _fzf_git_hashes() {
@@ -162,7 +162,7 @@ _fzf_git_hashes() {
     --bind "ctrl-o:execute-silent:bash $__fzf_git commit {}" \
     --bind 'ctrl-d:execute:grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git diff > /dev/tty' \
     --color hl:underline,hl+:underline \
-    --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always' |
+    --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always' "$@" |
   grep -o "[a-f0-9]\{7,\}"
 }
 
@@ -174,7 +174,7 @@ _fzf_git_remotes() {
     --header $'CTRL-O (open in browser)\n\n' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git remote {1}" \
     --preview-window right,70% \
-    --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {1}/"$(git rev-parse --abbrev-ref HEAD)"' |
+    --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {1}/"$(git rev-parse --abbrev-ref HEAD)"' "$@" |
   cut -d$'\t' -f1
 }
 
@@ -184,7 +184,7 @@ _fzf_git_stashes() {
     --prompt '🥡 Stashes> ' \
     --header $'CTRL-X (drop stash)\n\n' \
     --bind 'ctrl-x:execute-silent(git stash drop {1})+reload(git stash list)' \
-    -d: --preview 'git show --color=always {1}' |
+    -d: --preview 'git show --color=always {1}' "$@" |
   cut -d: -f1
 }
 

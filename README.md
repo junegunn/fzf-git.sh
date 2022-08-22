@@ -56,7 +56,7 @@ this.
 
 ```sh
 gco() {
-  local selected=$(_fzf_git_branches --no-multi)
+  local selected=$(_fzf_git_each_ref --no-multi)
   [ -n "$selected" ] && git checkout "$selected"
 }
 ```

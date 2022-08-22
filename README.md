@@ -32,8 +32,8 @@ Usage
   >
   > * <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> will not work if
   >   <kbd>CTRL-B</kbd> is used as the tmux prefix (bindkey)
-  > * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> will not work if flow control via
-  >   <kbd>CTRL-S</kbd> is enabled
+  > * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> will not work if flow control is enabled,
+  >   <kbd>CTRL-S</kbd> will freeze the terminal instead
   >     * (`stty -ixoff -ixon` will disable it)
   >
   > To workaround the problems, you can use

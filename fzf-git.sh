@@ -22,7 +22,7 @@
 
 if [[ $# -eq 1 ]]; then
   branches() {
-    git branch "$@" --sort=committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always | column -ts$'\t'
+    git branch "$@" --sort=-committerdate --sort=-HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always | column -ts$'\t'
   }
   case "$1" in
     branches)
@@ -49,8 +49,8 @@ elif [[ $# -gt 1 ]]; then
       hash=$(grep -o "[a-f0-9]\{7,\}" <<< "$2")
       path=/commit/$hash
       ;;
-    branch)
-      branch=$(sed 's/^..//' <<< "$2" | cut -d' ' -f1)
+    branch|remote-branch)
+      branch=$(sed 's/^[* ]*//' <<< "$2" | cut -d' ' -f1)
       remote=$(git config branch."${branch}".remote || echo 'origin')
       branch=${branch#$remote/}
       path=/tree/$branch
@@ -130,7 +130,7 @@ _fzf_git_files() {
 _fzf_git_branches() {
   _fzf_git_check || return
   bash "$__fzf_git" branches |
-  _fzf_git_fzf --ansi --tac \
+  _fzf_git_fzf --ansi \
     --prompt '🌲 Branches> ' \
     --header-lines 2 \
     --tiebreak begin \
@@ -188,6 +188,23 @@ _fzf_git_stashes() {
   cut -d: -f1
 }
 
+_fzf_git_each_ref() {
+  _fzf_git_check || return
+  git for-each-ref --sort=-committerdate --color=always --format=$'%(refname) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' |
+    sed 's#^refs/remotes/#\x1b[95mremote-branch\t\x1b[33m#; s#^refs/heads/#\x1b[92mbranch\t\x1b[33m#; s#^refs/tags/#\x1b[96mtag\t\x1b[33m#; s#refs/stash#\x1b[91mstash\t\x1b[33mrefs/stash#' |
+    column -ts$'\t' |
+  _fzf_git_fzf --ansi \
+    --nth 2,2.. \
+    --tiebreak begin \
+    --prompt '🌲 Each ref> ' \
+    --preview-window down,border-top,40% \
+    --color hl:underline,hl+:underline \
+    --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
+    --bind "ctrl-o:execute-silent:bash $__fzf_git {1} {2}" \
+    --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {2}' "$@" |
+  awk '{print $2}'
+}
+
 if [[ -n $BASH_VERSION ]]; then
   bind '"\er": redraw-current-line'
   bind '"\C-g\C-f": "$(_fzf_git_files)\e\C-e\er"'
@@ -196,6 +213,7 @@ if [[ -n $BASH_VERSION ]]; then
   bind '"\C-g\C-h": "$(_fzf_git_hashes)\e\C-e\er"'
   bind '"\C-g\C-r": "$(_fzf_git_remotes)\e\C-e\er"'
   bind '"\C-g\C-s": "$(_fzf_git_stashes)\e\C-e\er"'
+  bind '"\C-g\C-e": "$(_fzf_git_each_ref)\e\C-e\er"'
 elif [[ -n $ZSH_VERSION ]]; then
   __fzf_git_join() {
     local item
@@ -212,7 +230,7 @@ elif [[ -n $ZSH_VERSION ]]; then
       eval "bindkey '^g^${o[1]}' fzf-git-$o-widget"
     done
   }
-  __fzf_git_init files branches tags remotes hashes stashes
+  __fzf_git_init files branches tags remotes hashes stashes each_ref
 fi
 
 # -----------------------------------------------------------------------------

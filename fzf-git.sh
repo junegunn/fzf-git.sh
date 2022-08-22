@@ -150,6 +150,7 @@ _fzf_git_branches() {
     --tiebreak begin \
     --preview-window down,border-top,40% \
     --color hl:underline,hl+:underline \
+    --no-hscroll \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git branch {}" \
     --bind "ctrl-a:change-prompt(🌳 All branches> )+reload:bash \"$__fzf_git\" all-branches" \
@@ -211,6 +212,7 @@ _fzf_git_each_ref() {
     --header-lines 2 \
     --preview-window down,border-top,40% \
     --color hl:underline,hl+:underline \
+    --no-hscroll \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git {1} {2}" \
     --bind "ctrl-e:execute:${EDITOR:-vim} <(git show {2}) > /dev/tty" \

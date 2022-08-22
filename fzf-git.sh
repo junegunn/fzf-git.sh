@@ -190,7 +190,7 @@ _fzf_git_stashes() {
 
 _fzf_git_each_ref() {
   _fzf_git_check || return
-  git for-each-ref --sort=-taggerdate --sort=-committerdate --sort=-HEAD --color=always --format=$'%(refname) %(color:green)(%(committerdate:relative)%(taggerdate:relative))\t%(color:blue)%(subject)%(color:reset)' |
+  git for-each-ref --sort=-creatordate --sort=-HEAD --color=always --format=$'%(refname) %(color:green)(%(creatordate:relative))\t%(color:blue)%(subject)%(color:reset)' |
     sed 's#^refs/remotes/#\x1b[95mremote-branch\t\x1b[33m#; s#^refs/heads/#\x1b[92mbranch\t\x1b[33m#; s#^refs/tags/#\x1b[96mtag\t\x1b[33m#; s#refs/stash#\x1b[91mstash\t\x1b[33mrefs/stash#' |
     column -ts$'\t' |
   _fzf_git_fzf --ansi \

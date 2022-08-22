@@ -206,14 +206,14 @@ _fzf_git_each_ref() {
 }
 
 if [[ -n $BASH_VERSION ]]; then
-  bind '"\er": redraw-current-line'
-  bind '"\C-g\C-f": "$(_fzf_git_files)\e\C-e\er"'
-  bind '"\C-g\C-b": "$(_fzf_git_branches)\e\C-e\er"'
-  bind '"\C-g\C-t": "$(_fzf_git_tags)\e\C-e\er"'
-  bind '"\C-g\C-h": "$(_fzf_git_hashes)\e\C-e\er"'
-  bind '"\C-g\C-r": "$(_fzf_git_remotes)\e\C-e\er"'
-  bind '"\C-g\C-s": "$(_fzf_git_stashes)\e\C-e\er"'
-  bind '"\C-g\C-e": "$(_fzf_git_each_ref)\e\C-e\er"'
+  __fzf_git_init() {
+    bind '"\er": redraw-current-line'
+    local o
+    for o in "$@"; do
+      bind '"\C-g\C-'${o:0:1}'": "$(_fzf_git_'$o')\e\C-e\er"'
+      bind '"\C-g'${o:0:1}'": "$(_fzf_git_'$o')\e\C-e\er"'
+    done
+  }
 elif [[ -n $ZSH_VERSION ]]; then
   __fzf_git_join() {
     local item
@@ -224,14 +224,15 @@ elif [[ -n $ZSH_VERSION ]]; then
 
   __fzf_git_init() {
     local o
-    for o in $@; do
+    for o in "$@"; do
       eval "fzf-git-$o-widget() { local result=\$(_fzf_git_$o | __fzf_git_join); zle reset-prompt; LBUFFER+=\$result }"
       eval "zle -N fzf-git-$o-widget"
       eval "bindkey '^g^${o[1]}' fzf-git-$o-widget"
+      eval "bindkey '^g${o[1]}' fzf-git-$o-widget"
     done
   }
-  __fzf_git_init files branches tags remotes hashes stashes each_ref
 fi
+__fzf_git_init files branches tags remotes hashes stashes each_ref
 
 # -----------------------------------------------------------------------------
 fi

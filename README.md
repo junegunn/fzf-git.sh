@@ -29,6 +29,17 @@ Usage
     * <kbd>CTRL-G</kbd><kbd>CTRL-H</kbd> for commit **H**ashes
     * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
     * <kbd>CTRL-G</kbd><kbd>CTRL-E</kbd> for **E**ach ref (`git for-each-ref`)
+  > :warning: You may have issues with these bindings in the following cases:
+  >
+  > * <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> will not work if
+  >   <kbd>CTRL-B</kbd> is used as the tmux prefix
+  > * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> will not work if flow control is enabled,
+  >   <kbd>CTRL-S</kbd> will freeze the terminal instead
+  >     * (`stty -ixoff -ixon` will disable it)
+  >
+  > To workaround the problems, you can use
+  > <kbd>CTRL-G</kbd><kbd>*{key}*</kbd> instead of
+  > <kbd>CTRL-G</kbd><kbd>CTRL-*{KEY}*</kbd>.
 * Inside fzf
     * <kbd>TAB</kbd> or <kbd>SHIFT-TAB</kbd> to select multiple objects
     * <kbd>CTRL-/</kbd> to change preview window layout

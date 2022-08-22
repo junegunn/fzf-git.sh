@@ -196,7 +196,7 @@ _fzf_git_each_ref() {
   _fzf_git_fzf --ansi \
     --nth 2,2.. \
     --tiebreak begin \
-    --prompt '🌲 Each ref> ' \
+    --prompt '🌈 Each ref> ' \
     --preview-window down,border-top,40% \
     --color hl:underline,hl+:underline \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \

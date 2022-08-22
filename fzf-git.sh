@@ -214,7 +214,7 @@ _fzf_git_each_ref() {
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git {1} {2}" \
     --bind "ctrl-e:execute:${EDITOR:-vim} <(git show {2}) > /dev/tty" \
-    --bind "ctrl-a:change-prompt(🍀 All ref> )+reload:bash \"$__fzf_git\" all-refs" \
+    --bind "ctrl-a:change-prompt(🍀 Every ref> )+reload:bash \"$__fzf_git\" all-refs" \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {2}' "$@" |
   awk '{print $2}'
 }

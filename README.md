@@ -28,17 +28,17 @@ Usage
     * <kbd>CTRL-G</kbd><kbd>CTRL-R</kbd> for **R**emotes
     * <kbd>CTRL-G</kbd><kbd>CTRL-H</kbd> for commit **H**ashes
     * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
-    * > :warning: You may have issues with these bindings in the following cases:
-      >
-      > * <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> will not work if
-      >   <kbd>CTRL-B</kbd> is used as the tmux prefix (bindkey)
-      > * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> will not work if flow control via
-      >   <kbd>CTRL-S</kbd> is enabled
-      >     * (`stty -ixoff -ixon` will disable it)
-      >
-      > To workaround the problems, you can use
-      > <kbd>CTRL-G</kbd><kbd>*{key}*</kbd> instead of
-      > <kbd>CTRL-G</kbd><kbd>CTRL-*{KEY}*</kbd>.
+  > :warning: You may have issues with these bindings in the following cases:
+  >
+  > * <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> will not work if
+  >   <kbd>CTRL-B</kbd> is used as the tmux prefix (bindkey)
+  > * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> will not work if flow control via
+  >   <kbd>CTRL-S</kbd> is enabled
+  >     * (`stty -ixoff -ixon` will disable it)
+  >
+  > To workaround the problems, you can use
+  > <kbd>CTRL-G</kbd><kbd>*{key}*</kbd> instead of
+  > <kbd>CTRL-G</kbd><kbd>CTRL-*{KEY}*</kbd>.
 * Inside fzf
     * <kbd>TAB</kbd> or <kbd>SHIFT-TAB</kbd> to select multiple objects
     * <kbd>CTRL-/</kbd> to change preview window layout

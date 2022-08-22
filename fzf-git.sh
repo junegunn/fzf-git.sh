@@ -197,10 +197,12 @@ _fzf_git_each_ref() {
     --nth 2,2.. \
     --tiebreak begin \
     --prompt '🌈 Each ref> ' \
+    --header $'CTRL-O (open in browser) ╱ CTRL-E (examine in editor)\n\n' \
     --preview-window down,border-top,40% \
     --color hl:underline,hl+:underline \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git {1} {2}" \
+    --bind "ctrl-e:execute:${EDITOR:-vim} <(git show {2}) > /dev/tty" \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {2}' "$@" |
   awk '{print $2}'
 }

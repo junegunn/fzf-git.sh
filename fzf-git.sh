@@ -22,7 +22,13 @@
 
 if [[ $# -eq 1 ]]; then
   branches() {
-    git branch "$@" --sort=committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always | column -ts$'\t'
+    git branch "$@" --sort=-committerdate --sort=-HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always | column -ts$'\t'
+  }
+  refs() {
+    git for-each-ref --sort=-creatordate --sort=-HEAD --color=always --format=$'%(refname) %(color:green)(%(creatordate:relative))\t%(color:blue)%(subject)%(color:reset)' |
+      eval "$1" |
+      sed 's#^refs/remotes/#\x1b[95mremote-branch\t\x1b[33m#; s#^refs/heads/#\x1b[92mbranch\t\x1b[33m#; s#^refs/tags/#\x1b[96mtag\t\x1b[33m#; s#refs/stash#\x1b[91mstash\t\x1b[33mrefs/stash#' |
+      column -ts$'\t'
   }
   case "$1" in
     branches)
@@ -32,6 +38,14 @@ if [[ $# -eq 1 ]]; then
     all-branches)
       echo $'CTRL-O (open in browser)\n'
       branches -a
+      ;;
+    refs)
+      echo $'CTRL-O (open in browser) ╱ CTRL-E (examine in editor) ╱ CTRL-A (show all refs)\n'
+      refs 'grep -v ^refs/remotes'
+      ;;
+    all-refs)
+      echo $'CTRL-O (open in browser) ╱ CTRL-E (examine in editor)\n'
+      refs 'cat'
       ;;
     *) exit 1 ;;
   esac
@@ -49,8 +63,8 @@ elif [[ $# -gt 1 ]]; then
       hash=$(grep -o "[a-f0-9]\{7,\}" <<< "$2")
       path=/commit/$hash
       ;;
-    branch)
-      branch=$(sed 's/^..//' <<< "$2" | cut -d' ' -f1)
+    branch|remote-branch)
+      branch=$(sed 's/^[* ]*//' <<< "$2" | cut -d' ' -f1)
       remote=$(git config branch."${branch}".remote || echo 'origin')
       branch=${branch#$remote/}
       path=/tree/$branch
@@ -130,12 +144,13 @@ _fzf_git_files() {
 _fzf_git_branches() {
   _fzf_git_check || return
   bash "$__fzf_git" branches |
-  _fzf_git_fzf --ansi --tac \
+  _fzf_git_fzf --ansi \
     --prompt '🌲 Branches> ' \
     --header-lines 2 \
     --tiebreak begin \
     --preview-window down,border-top,40% \
     --color hl:underline,hl+:underline \
+    --no-hscroll \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git branch {}" \
     --bind "ctrl-a:change-prompt(🌳 All branches> )+reload:bash \"$__fzf_git\" all-branches" \
@@ -188,6 +203,24 @@ _fzf_git_stashes() {
   cut -d: -f1
 }
 
+_fzf_git_each_ref() {
+  _fzf_git_check || return
+  bash "$__fzf_git" refs | _fzf_git_fzf --ansi \
+    --nth 2,2.. \
+    --tiebreak begin \
+    --prompt '☘️  Each ref> ' \
+    --header-lines 2 \
+    --preview-window down,border-top,40% \
+    --color hl:underline,hl+:underline \
+    --no-hscroll \
+    --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
+    --bind "ctrl-o:execute-silent:bash $__fzf_git {1} {2}" \
+    --bind "ctrl-e:execute:${EDITOR:-vim} <(git show {2}) > /dev/tty" \
+    --bind "ctrl-a:change-prompt(🍀 Every ref> )+reload:bash \"$__fzf_git\" all-refs" \
+    --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {2}' "$@" |
+  awk '{print $2}'
+}
+
 if [[ -n $BASH_VERSION ]]; then
   __fzf_git_init() {
     bind '"\er": redraw-current-line'
@@ -215,7 +248,7 @@ elif [[ -n $ZSH_VERSION ]]; then
     done
   }
 fi
-__fzf_git_init files branches tags remotes hashes stashes
+__fzf_git_init files branches tags remotes hashes stashes each_ref
 
 # -----------------------------------------------------------------------------
 fi

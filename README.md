@@ -28,6 +28,7 @@ Usage
     * <kbd>CTRL-G</kbd><kbd>CTRL-R</kbd> for **R**emotes
     * <kbd>CTRL-G</kbd><kbd>CTRL-H</kbd> for commit **H**ashes
     * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
+    * <kbd>CTRL-G</kbd><kbd>CTRL-E</kbd> for **E**ach ref (`git for-each-ref`)
   > :warning: You may have issues with these bindings in the following cases:
   >
   > * <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> will not work if
@@ -66,7 +67,7 @@ this.
 
 ```sh
 gco() {
-  local selected=$(_fzf_git_branches --no-multi)
+  local selected=$(_fzf_git_each_ref --no-multi)
   [ -n "$selected" ] && git checkout "$selected"
 }
 ```

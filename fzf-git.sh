@@ -32,7 +32,7 @@ if [[ $# -eq 1 ]]; then
   }
   case "$1" in
     branches)
-      echo $'CTRL-O (open in browser) ╱ CTRL-A (show all branches)\n'
+      echo $'CTRL-O (open in browser) ╱ ALT-A (show all branches)\n'
       branches
       ;;
     all-branches)
@@ -40,11 +40,11 @@ if [[ $# -eq 1 ]]; then
       branches -a
       ;;
     refs)
-      echo $'CTRL-O (open in browser) ╱ CTRL-E (examine in editor) ╱ CTRL-A (show all refs)\n'
+      echo $'CTRL-O (open in browser) ╱ ALT-E (examine in editor) ╱ ALT-A (show all refs)\n'
       refs 'grep -v ^refs/remotes'
       ;;
     all-refs)
-      echo $'CTRL-O (open in browser) ╱ CTRL-E (examine in editor)\n'
+      echo $'CTRL-O (open in browser) ╱ ALT-E (examine in editor)\n'
       refs 'cat'
       ;;
     *) exit 1 ;;
@@ -134,9 +134,9 @@ _fzf_git_files() {
    git ls-files | grep -vf <(git status -s | grep '^[^?]' | cut -c4-) | sed 's/^/   /') |
   _fzf_git_fzf -m --ansi --nth 2..,.. \
     --prompt '📁 Files> ' \
-    --header $'CTRL-O (open in browser) ╱ CTRL-E (open in editor)\n\n' \
+    --header $'CTRL-O (open in browser) ╱ ALT-E (open in editor)\n\n' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git file {-1}" \
-    --bind "ctrl-e:execute:${EDITOR:-vim} {-1} > /dev/tty" \
+    --bind "alt-e:execute:${EDITOR:-vim} {-1} > /dev/tty" \
     --preview "git diff --no-ext-diff --color=always -- {-1} | sed 1,4d; $_fzf_git_cat {-1}" "$@" |
   cut -c4- | sed 's/.* -> //'
 }
@@ -153,7 +153,7 @@ _fzf_git_branches() {
     --no-hscroll \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git branch {}" \
-    --bind "ctrl-a:change-prompt(🌳 All branches> )+reload:bash \"$__fzf_git\" all-branches" \
+    --bind "alt-a:change-prompt(🌳 All branches> )+reload:bash \"$__fzf_git\" all-branches" \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1)' "$@" |
   sed 's/^..//' | cut -d' ' -f1
 }
@@ -215,8 +215,8 @@ _fzf_git_each_ref() {
     --no-hscroll \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash $__fzf_git {1} {2}" \
-    --bind "ctrl-e:execute:${EDITOR:-vim} <(git show {2}) > /dev/tty" \
-    --bind "ctrl-a:change-prompt(🍀 Every ref> )+reload:bash \"$__fzf_git\" all-refs" \
+    --bind "alt-e:execute:${EDITOR:-vim} <(git show {2}) > /dev/tty" \
+    --bind "alt-a:change-prompt(🍀 Every ref> )+reload:bash \"$__fzf_git\" all-refs" \
     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {2}' "$@" |
   awk '{print $2}'
 }

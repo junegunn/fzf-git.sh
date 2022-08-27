@@ -221,7 +221,7 @@ _fzf_git_each_ref() {
   awk '{print $2}'
 }
 
-if [[ -n $BASH_VERSION ]]; then
+if [[ -n "${BASH_VERSION:-}" ]]; then
   __fzf_git_init() {
     bind '"\er": redraw-current-line'
     local o
@@ -230,7 +230,7 @@ if [[ -n $BASH_VERSION ]]; then
       bind '"\C-g'${o:0:1}'": "$(_fzf_git_'$o')\e\C-e\er"'
     done
   }
-elif [[ -n $ZSH_VERSION ]]; then
+elif [[ -n "${ZSH_VERSION:-}" ]]; then
   __fzf_git_join() {
     local item
     while read item; do

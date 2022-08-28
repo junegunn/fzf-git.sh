@@ -115,7 +115,8 @@ _fzf_git_check() {
   return 1
 }
 
-__fzf_git=$(readlink -f ${BASH_SOURCE[0]:-${(%):-%x}})
+__fzf_git=${BASH_SOURCE[0]:-${(%):-%x}}
+__fzf_git=$(readlink -f "$__fzf_git" 2> /dev/null || /usr/bin/ruby --disable-gems -e 'puts File.expand_path(ARGV.first)' "$__fzf_git" 2> /dev/null)
 
 if [[ -z $_fzf_git_cat ]]; then
   # Sometimes bat is installed as batcat

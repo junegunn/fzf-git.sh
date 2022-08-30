@@ -35,7 +35,7 @@ Usage
   >   <kbd>CTRL-B</kbd> is used as the tmux prefix
   > * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> will not work if flow control is enabled,
   >   <kbd>CTRL-S</kbd> will freeze the terminal instead
-  >     * (`stty -ixoff -ixon` will disable it)
+  >     * (`stty -ixon` will disable it)
   >
   > To workaround the problems, you can use
   > <kbd>CTRL-G</kbd><kbd>*{key}*</kbd> instead of

@@ -47,6 +47,7 @@ if [[ $# -eq 1 ]]; then
       echo $'CTRL-O (open in browser) ╱ ALT-E (examine in editor)\n'
       refs 'cat'
       ;;
+    nobeep) ;;
     *) exit 1 ;;
   esac
 elif [[ $# -gt 1 ]]; then

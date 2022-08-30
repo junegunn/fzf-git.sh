@@ -63,7 +63,7 @@ Defining shortcut commands
 --------------------------
 
 Each binding is backed by `_fzf_git_*` function so you can do something like
-this in your shell config.
+this in your shell configuration file.
 
 ```sh
 gco() {

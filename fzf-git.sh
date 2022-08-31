@@ -133,7 +133,7 @@ fi
 _fzf_git_files() {
   _fzf_git_check || return
   (git -c color.status=always status --short
-   git ls-files | grep -vf <(git status -s | grep '^[^?]' | cut -c4-) | sed 's/^/   /') |
+   git ls-files | grep -vxFf <(git status -s | grep '^[^?]' | cut -c4-; echo :) | sed 's/^/   /') |
   _fzf_git_fzf -m --ansi --nth 2..,.. \
     --prompt '📁 Files> ' \
     --header $'CTRL-O (open in browser) ╱ ALT-E (open in editor)\n\n' \

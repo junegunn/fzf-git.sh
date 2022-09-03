@@ -228,8 +228,8 @@ if [[ -n "${BASH_VERSION:-}" ]]; then
     bind '"\er": redraw-current-line'
     local o
     for o in "$@"; do
-      bind '"\C-g\C-'${o:0:1}'": "$(_fzf_git_'$o')\e\C-e\er"'
-      bind '"\C-g'${o:0:1}'": "$(_fzf_git_'$o')\e\C-e\er"'
+      bind '"\C-g\C-'${o:0:1}'": "`_fzf_git_'$o'`\e\C-e\er"'
+      bind '"\C-g'${o:0:1}'": "`_fzf_git_'$o'`\e\C-e\er"'
     done
   }
 elif [[ -n "${ZSH_VERSION:-}" ]]; then

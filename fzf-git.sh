@@ -74,7 +74,7 @@ elif [[ $# -gt 1 ]]; then
       remote=$2
       path=/tree/$branch
       ;;
-    file) path=/blob/$branch/$2 ;;
+    file) path=/blob/$branch/$(git rev-parse --show-prefix)$2 ;;
     tag)  path=/releases/tag/$2 ;;
     *)    exit 1 ;;
   esac

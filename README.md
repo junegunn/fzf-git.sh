@@ -53,7 +53,8 @@ Customization
 _fzf_git_fzf() {
   fzf-tmux -p80%,60% -- \
     --layout=reverse --multi --height=50% --min-height=20 --border \
-    --color='header:italic:underline' \
+    --border-label-pos=2 \
+    --color='header:italic:underline,label:blue' \
     --preview-window='right,50%,border-left' \
     --bind='ctrl-/:change-preview-window(down,50%,border-top|hidden|)' "$@"
 }

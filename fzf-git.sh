@@ -206,6 +206,14 @@ _fzf_git_stashes() {
   cut -d: -f1
 }
 
+_fzf_git_lreflogs() {
+  _fzf_git_check || return
+  git reflog --color=always --format="%C(blue)%gD %C(yellow)%h%C(auto)%d %gs" | _fzf_git_fzf --ansi \
+    --border-label '📒 Reflogs' \
+    --preview 'git show --color=always {1}' "$@" |
+  awk '{print $1}'
+}
+
 _fzf_git_each_ref() {
   _fzf_git_check || return
   bash "$__fzf_git" refs | _fzf_git_fzf --ansi \
@@ -251,7 +259,7 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
     done
   }
 fi
-__fzf_git_init files branches tags remotes hashes stashes each_ref
+__fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref
 
 # -----------------------------------------------------------------------------
 fi

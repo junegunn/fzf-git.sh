@@ -28,6 +28,7 @@ Usage
     * <kbd>CTRL-G</kbd><kbd>CTRL-R</kbd> for **R**emotes
     * <kbd>CTRL-G</kbd><kbd>CTRL-H</kbd> for commit **H**ashes
     * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
+    * <kbd>CTRL-G</kbd><kbd>CTRL-L</kbd> for ref**l**ogs
     * <kbd>CTRL-G</kbd><kbd>CTRL-E</kbd> for **E**ach ref (`git for-each-ref`)
   > :warning: You may have issues with these bindings in the following cases:
   >

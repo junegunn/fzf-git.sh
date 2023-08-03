@@ -41,6 +41,9 @@ Usage
   > To workaround the problems, you can use
   > <kbd>CTRL-G</kbd><kbd>*{key}*</kbd> instead of
   > <kbd>CTRL-G</kbd><kbd>CTRL-*{KEY}*</kbd>.
+  >
+  > * zsh's `KEYTIMEOUT` is set to something very low (e.g. 1)  
+  >     * Verify by running `unset KEYTIMEOUT` and then using a keybind.
 * Inside fzf
     * <kbd>TAB</kbd> or <kbd>SHIFT-TAB</kbd> to select multiple objects
     * <kbd>CTRL-/</kbd> to change preview window layout

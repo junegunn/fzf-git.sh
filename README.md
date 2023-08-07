@@ -9,11 +9,12 @@ Each binding will allow you to browse through Git objects of a certain type,
 and select the objects you want to paste to your command-line.
 
 [fzf]: https://github.com/junegunn/fzf
+[fzf-tmux]: https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux
 
 Installation
 ------------
 
-1. Install the latest version of [fzf][fzf]
+1. Install the latest version of [fzf][fzf] and [fzf-tmux][fzf-tmux]
     * (Optional) Install [bat](https://github.com/sharkdp/bat) for
       syntax-highlighted file previews
 1. Source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh) file from your .bashrc or .zshrc

@@ -14,7 +14,7 @@ and select the objects you want to paste to your command-line.
 Installation
 ------------
 
-1. Install the latest version of [fzf][fzf] and [fzf-tmux][fzf-tmux]
+1. Install the latest version of [fzf][fzf] (including [fzf-tmux][fzf-tmux])
     * (Optional) Install [bat](https://github.com/sharkdp/bat) for
       syntax-highlighted file previews
 1. Source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh) file from your .bashrc or .zshrc

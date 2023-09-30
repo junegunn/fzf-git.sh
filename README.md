@@ -75,7 +75,6 @@ this in your shell configuration file.
 
 ```sh
 gco() {
-  local selected=$(_fzf_git_each_ref --no-multi)
-  [ -n "$selected" ] && git checkout "$selected"
+  _fzf_git_each_ref --no-multi | xargs git checkout
 }
 ```

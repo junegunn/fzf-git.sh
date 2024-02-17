@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 #
-# Copyright (c) 2022 Junegunn Choi
+# Copyright (c) 2024 Junegunn Choi
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+# shellcheck disable=SC2039
 [[ $0 = - ]] && return
 
 if [[ $# -eq 1 ]]; then

@@ -235,6 +235,20 @@ _fzf_git_each_ref() {
   awk '{print $2}'
 }
 
+_fzf_git_worktrees() {
+  _fzf_git_check || return
+  git worktree list | _fzf_git_fzf \
+    --border-label '🌴 Worktrees' \
+    --header $'CTRL-X (remove worktree)\n\n' \
+    --bind 'ctrl-x:reload(git worktree remove {1} > /dev/null; git worktree list)' \
+    --preview '
+      git -c color.status=always -C {1} status --short --branch
+      echo
+      git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {2} --
+    ' "$@" |
+  awk '{print $1}'
+}
+
 if [[ -n "${BASH_VERSION:-}" ]]; then
   __fzf_git_init() {
     bind '"\er": redraw-current-line'
@@ -262,7 +276,7 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
     done
   }
 fi
-__fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref
+__fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref worktrees
 
 # -----------------------------------------------------------------------------
 fi

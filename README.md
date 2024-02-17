@@ -30,6 +30,7 @@ Usage
     * <kbd>CTRL-G</kbd><kbd>CTRL-H</kbd> for commit **H**ashes
     * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
     * <kbd>CTRL-G</kbd><kbd>CTRL-L</kbd> for ref**l**ogs
+    * <kbd>CTRL-G</kbd><kbd>CTRL-W</kbd> for **W**orktrees
     * <kbd>CTRL-G</kbd><kbd>CTRL-E</kbd> for **E**ach ref (`git for-each-ref`)
   > :warning: You may have issues with these bindings in the following cases:
   >
@@ -76,5 +77,9 @@ this in your shell configuration file.
 ```sh
 gco() {
   _fzf_git_each_ref --no-multi | xargs git checkout
+}
+
+gswt() {
+  cd "$(_fzf_git_worktrees --no-multi)"
 }
 ```

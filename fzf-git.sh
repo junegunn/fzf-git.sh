@@ -203,7 +203,7 @@ _fzf_git_stashes() {
   git stash list | _fzf_git_fzf \
     --border-label '🥡 Stashes' \
     --header $'CTRL-X (drop stash)\n\n' \
-    --bind 'ctrl-x:execute-silent(git stash drop {1})+reload(git stash list)' \
+    --bind 'ctrl-x:reload(git stash drop -q {1}; git stash list)' \
     -d: --preview 'git show --color=always {1}' "$@" |
   cut -d: -f1
 }

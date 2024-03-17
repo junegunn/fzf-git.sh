@@ -32,7 +32,8 @@ Usage
     * <kbd>CTRL-G</kbd><kbd>CTRL-L</kbd> for ref**l**ogs
     * <kbd>CTRL-G</kbd><kbd>CTRL-W</kbd> for **W**orktrees
     * <kbd>CTRL-G</kbd><kbd>CTRL-E</kbd> for **E**ach ref (`git for-each-ref`)
-  > :warning: You may have issues with these bindings in the following cases:
+  > [!WARNING]
+  > You may have issues with these bindings in the following cases:
   >
   > * <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> will not work if
   >   <kbd>CTRL-B</kbd> is used as the tmux prefix
@@ -45,7 +46,8 @@ Usage
   > <kbd>CTRL-G</kbd><kbd>CTRL-*{KEY}*</kbd>.
   >
 
-  > :warning: If zsh's `KEYTIMEOUT` is too small (e.g. 1), you may not be able
+  > [!WARNING]
+  > If zsh's `KEYTIMEOUT` is too small (e.g. 1), you may not be able
   > to hit two keys in time.
 
 * Inside fzf

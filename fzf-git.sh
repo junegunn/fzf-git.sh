@@ -268,12 +268,20 @@ _fzf_git_worktrees() {
 
 if [[ -n "${BASH_VERSION:-}" ]]; then
   __fzf_git_init() {
-    bind '"\er": redraw-current-line'
-    bind '"\e\C-e": shell-expand-line'
-    local o
+    bind -m emacs-standard '"\er":  redraw-current-line'
+    bind -m emacs-standard '"\C-z": vi-editing-mode'
+    bind -m vi-command     '"\C-z": emacs-editing-mode'
+    bind -m vi-insert      '"\C-z": emacs-editing-mode'
+
+    local o c
     for o in "$@"; do
-      bind '"\C-g\C-'${o:0:1}'": "`_fzf_git_'$o'`\e\C-e\er"'
-      bind '"\C-g'${o:0:1}'": "`_fzf_git_'$o'`\e\C-e\er"'
+      c=${o:0:1}
+      bind -m emacs-standard '"\C-g\C-'$c'": " \C-u \C-a\C-k`_fzf_git_'$o'`\e\C-e\C-y\C-a\C-y\ey\C-h\C-e\er \C-h"'
+      bind -m vi-command     '"\C-g\C-'$c'": "\C-z\C-g\C-'$c'\C-z"'
+      bind -m vi-insert      '"\C-g\C-'$c'": "\C-z\C-g\C-'$c'\C-z"'
+      bind -m emacs-standard '"\C-g'$c'":    " \C-u \C-a\C-k`_fzf_git_'$o'`\e\C-e\C-y\C-a\C-y\ey\C-h\C-e\er \C-h"'
+      bind -m vi-command     '"\C-g'$c'":    "\C-z\C-g'$c'\C-z"'
+      bind -m vi-insert      '"\C-g'$c'":    "\C-z\C-g'$c'\C-z"'
     done
   }
 elif [[ -n "${ZSH_VERSION:-}" ]]; then

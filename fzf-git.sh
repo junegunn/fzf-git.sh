@@ -211,7 +211,7 @@ _fzf_git_graph() {
     _fzf_git_fzf --height=100% \
                  --preview-window='right,50%,border-left,hidden' \
                  --ansi \
-                 --border-label 'Git Graph' \
+                 --border-label '⛙ Git Graph' \
                  --header $'ENTER: Open Log | CTRL-J: Select Ref\nCTRL-L: Toggle Log Preview | ALT-SHIFT-UP/DOWN: Half Page Up/Down Preview\nCTRL-/: Resize Preview' \
                  --bind 'ctrl-l:toggle-preview' \
                  --bind 'alt-shift-up:preview-half-page-up,alt-shift-down:preview-half-page-down' \

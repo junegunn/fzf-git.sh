@@ -10,6 +10,7 @@ and select the objects you want to paste to your command-line.
 
 [fzf]: https://github.com/junegunn/fzf
 [fzf-tmux]: https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux
+[zsh-vi-mode]: https://github.com/jeffreytse/zsh-vi-mode
 
 Installation
 ------------
@@ -86,5 +87,33 @@ gco() {
 
 gswt() {
   cd "$(_fzf_git_worktrees --no-multi)"
+}
+```
+
+Note for [zsh-vi-mode] users
+----------------------------
+
+The built-in vi mode for zsh should work fine, but if you use the [zsh-vi-mode]
+plugin for ZSH then you will need to add the following to your `.zshrc` file
+in order to use the key bindings:
+
+```sh
+# Set key bindings for zsh-vi-mode insert mode.
+function zvm_after_init() {
+  zvm_bindkey viins "^P" up-line-or-beginning-search
+  zvm_bindkey viins "^N" down-line-or-beginning-search
+  for o in files branches tags remotes hashes stashes lreflogs each_ref; do
+    eval "zvm_bindkey viins '^g^${o[1]}' fzf-git-$o-widget"
+    eval "zvm_bindkey viins '^g${o[1]}' fzf-git-$o-widget"
+  done
+}
+# Set key bindings for zsh-vi-mode normal and visual modes.
+function zvm_after_lazy_keybindings() {
+  for o in files branches tags remotes hashes stashes lreflogs each_ref; do
+    eval "zvm_bindkey vicmd '^g^${o[1]}' fzf-git-$o-widget"
+    eval "zvm_bindkey vicmd '^g${o[1]}' fzf-git-$o-widget"
+    eval "zvm_bindkey visual '^g^${o[1]}' fzf-git-$o-widget"
+    eval "zvm_bindkey visual '^g${o[1]}' fzf-git-$o-widget"
+  done
 }
 ```

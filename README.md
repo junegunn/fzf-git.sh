@@ -55,7 +55,7 @@ Usage
 ### Inside fzf
 
 * <kbd>TAB</kbd> or <kbd>SHIFT-TAB</kbd> to select multiple objects
-* <kbd>CTRL-l</kbd> to change preview window layout
+* <kbd>CTRL-L</kbd> to change preview window layout
 * <kbd>CTRL-O</kbd> to open the object in the web browser (in GitHub URL scheme)
 
 Customization

@@ -88,3 +88,14 @@ gswt() {
   cd "$(_fzf_git_worktrees --no-multi)"
 }
 ```
+
+Environment Variables
+---------------------
+
+| Variable                | Description                                              | Default                                         |
+| ----------------------- | -------------------------------------------------------- | ----------------------------------------------- |
+| `BAT_STYLE`             | Specifies the style for displaying files using `bat`     | `full`                                          |
+| `FZF_GIT_CAT`           | Defines the preview command used for displaying the file | `bat --style=$BAT_STYLE --color=$FZF_GIT_COLOR` |
+| `FZF_GIT_COLOR`         | Set to `never` to suppress colors in the list            | `always`                                        |
+| `FZF_GIT_PAGER`         | Specifies the pager command for the preview window       | `$(git config --get core.pager)`                |
+| `FZF_GIT_PREVIEW_COLOR` | Set to `never` to suppress colors in the preview window  | `always`                                        |

@@ -78,11 +78,13 @@ if [[ $1 = --list ]]; then
         branches -a
         ;;
       hashes)
-        echo $'CTRL-O (open in browser) ╱ CTRL-D (diff)\nCTRL-S (toggle sort) ╱ ALT-A (show all hashes)\n'
+        echo $'CTRL-O (open in browser) ╱ CTRL-D (diff)\nCTRL-S (toggle sort) ╱ ALT-A (show all hashes)'
+        echo $'Enter (examine in Vim) / CTRL-C (checkout) / CTRL-P (toogle preview)\n'
         hashes
         ;;
       all-hashes)
-        echo $'CTRL-O (open in browser) ╱ CTRL-D (diff)\nCTRL-S (toggle sort)\n'
+        echo $'CTRL-O (open in browser) ╱ CTRL-D (diff)\nCTRL-S (toggle sort)'
+        echo $'Enter (examine in Vim) / CTRL-C (checkout) / CTRL-P (toogle preview)\n'
         hashes --all
         ;;
       refs)
@@ -212,6 +214,16 @@ _fzf_git_tags() {
 }
 
 _fzf_git_hashes() {
+   
+   # ctrl-y and ctrl-z below not working
+   # aim is to update terminal prompt if checkouted to a commit
+   # without need to run any cmd in terminal (like date)
+   _fzf_git_checkout_commit() {
+     local commit_hash="$1"  # Directly use the parameter passed to the function
+     git checkout "$commit_hash"
+   }
+   # workaround are sequence-widgets that overwrite this function call (bottom of file)
+   
   _fzf_git_check || return
   bash "$__fzf_git" --list hashes |
   _fzf_git_fzf --ansi --no-sort --bind 'ctrl-s:toggle-sort' \
@@ -220,6 +232,9 @@ _fzf_git_hashes() {
     --border-label '🍡 Hashes' \
     --header-lines 3 \
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list commit {}" \
+    --bind "ctrl-c:become:(echo {} | grep -o '[a-f0-9]\{7\}' | head -1 | xargs git checkout > /dev/tty)" \
+    --bind "ctrl-y:execute:grep -o '[a-f0-9]\{7\}'  <<< {} | head -n 1 | xargs _fzf_git_checkout_commit " \
+    --bind "ctrl-z:execute:(echo {} | grep -o '[a-f0-9]\{7\}' | head -1 | xargs -I % _fzf_git_checkout_commit %)" \
     --bind "ctrl-d:execute:grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git diff --color=$(__fzf_git_color) > /dev/tty" \
     --bind "alt-a:change-border-label(🍇 All hashes)+reload:bash \"$__fzf_git\" --list all-hashes" \
     --bind "enter:execute:grep -o '[a-f0-9]\{7\}' <<< {} | head -n 1 | xargs -I % sh -c 'vim -c \":Gedit %\" < /dev/tty'" \
@@ -327,8 +342,47 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
       done
     done
   }
+
+  # --- Commit chekout ---
+  # To update terminal prompt if checkouted to a commit
+  # without need to run any cmd in terminal (like date)
+  # -- Workaround START --
+  # Define the widget to display the current commit-hash
+  zle -N git_echo_commit_hash_widget
+  git_echo_commit_hash_widget() {
+    echo -e "New commit hash is \e[30;44m $(git rev-parse HEAD) \e[0m"
+  }
+  # Create a ZLE widget to call _fzf_git_hashes
+  zle -N fzf_git_hashes_custome_widget
+  fzf_git_hashes_custome_widget() {
+    _fzf_git_hashes
+  }
+  # Define a new widget that chains the two widgets together
+  zle -N chain_fzf_git_hashes_custome_widgets
+  chain_fzf_git_hashes_custome_widgets() {
+    fzf_git_hashes_custome_widget
+    git_echo_commit_hash_widget
+  }
+  # Bind Ctrl+G 
+  bindkey '^G' chain_fzf_git_hashes_custome_widgets
+  # Bind Ctrl+G Ctrl+H
+  __fzf_git_init_chain_fzf_git_hashes_custome_widgets() {
+    local m
+    for m in emacs vicmd viins; do
+      eval "bindkey -M $m '^g^h' chain_fzf_git_hashes_custome_widgets"
+      eval "bindkey -M $m '^gh' chain_fzf_git_hashes_custome_widgets"
+    done
+  }
+  # Initialize the binding: see EOF
+  # -- Workaround END --
+
+
 fi
 __fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref worktrees
 
+# Initialize the binding after the default one to overwrite it
+__fzf_git_init_chain_fzf_git_hashes_custome_widgets
+
 # -----------------------------------------------------------------------------
 fi
+

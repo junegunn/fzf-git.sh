@@ -70,11 +70,13 @@ if [[ $1 = --list ]]; then
     }
     case "$1" in
       branches)
-        echo $'CTRL-O (open in browser) ╱ ALT-A (show all branches)\n'
+        echo $'CTRL-O (open in browser) ╱ ALT-A (show all branches)'
+        echo $'Enter (examine in Vim) / CTRL-C (checkout-switch)\n'
         branches
         ;;
       all-branches)
-        echo $'CTRL-O (open in browser)\n'
+        echo $'CTRL-O (open in browser)'
+        echo $'Enter (examine in Vim) / CTRL-C (checkout-switch)\n'
         branches -a
         ;;
       hashes)
@@ -200,6 +202,7 @@ _fzf_git_branches() {
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list branch {}" \
     --bind "alt-a:change-border-label(🌳 All branches)+reload:bash \"$__fzf_git\" --list all-branches" \
     --bind "enter:execute:sed 's/^..//' <<< {} | cut -d' ' -f1 | xargs -I % sh -c 'vim -c \":Gedit %\" < /dev/tty'" \
+    --bind "ctrl-c:become:(echo {} | sed 's/^..//' | cut -d' ' -f1 | xargs git switch > /dev/tty)" \
     --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' \$(sed s/^..// <<< {} | cut -d' ' -f1) --" "$@" |
   sed 's/^..//' | cut -d' ' -f1
 }
@@ -377,12 +380,45 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
   # Initialize the binding: see EOF
   # -- Workaround END --
 
+  # --- Branch chekout-switch ---
+  # To update terminal prompt if switched to a branch
+  # without need to run any cmd in terminal (like date)
+  # -- Workaround START --
+  # Define the widget to display the current branch
+  zle -N git_echo_commit_hash_widget
+  git_echo_branch_widget() {
+    echo -e "New branch is \e[30;44m $(git branch --show-current) \e[0m"
+  }
+  # Create a ZLE widget to call _fzf_git_branches
+  zle -N fzf_git_branches_custome_widget
+  fzf_git_branches_custome_widget() {
+    _fzf_git_branches
+  }
+  # Define a new widget that chains the two widgets together
+  zle -N chain_fzf_git_branches_custome_widgets
+  chain_fzf_git_branches_custome_widgets() {
+    fzf_git_branches_custome_widget
+    git_echo_branch_widget
+  }
+  # Bind Ctrl+B 
+  bindkey '^B' chain_fzf_git_branches_custome_widgets
+  # Bind Ctrl+G Ctrl+B
+  __fzf_git_init_chain_fzf_git_branches_custome_widgets() {
+    local m
+    for m in emacs vicmd viins; do
+      eval "bindkey -M $m '^g^b' chain_fzf_git_branches_custome_widgets"
+      eval "bindkey -M $m '^gb' chain_fzf_git_branches_custome_widgets"
+    done
+  }
+  # Initialize the binding: see EOF
+  # -- Workaround END --
 
 fi
 __fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref worktrees
 
 # Initialize the binding after the default one to overwrite it
 __fzf_git_init_chain_fzf_git_hashes_custome_widgets
+__fzf_git_init_chain_fzf_git_branches_custome_widgets
 
 # -----------------------------------------------------------------------------
 fi

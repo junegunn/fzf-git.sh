@@ -235,6 +235,7 @@ _fzf_git_hashes() {
     --bind=ctrl-p:toggle-preview \
     --border-label '🍡 Hashes' \
     --header-lines 3 \
+    --preview-window right,border-left,50% \
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list commit {}" \
     --bind "ctrl-c:become:(echo {} | grep -o '[a-f0-9]\{7\}' | head -1 | xargs git checkout > /dev/tty)" \
     --bind "ctrl-y:execute:grep -o '[a-f0-9]\{7\}'  <<< {} | head -n 1 | xargs _fzf_git_checkout_commit " \

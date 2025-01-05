@@ -63,11 +63,12 @@ Customization
 ```sh
 # Redefine this function to change the options
 _fzf_git_fzf() {
-  fzf --height=50% --tmux 90%,70% \
+  fzf --height=50% --tmux 90%,70% --list-border --input-border --header-border \
+    --info inline-right --highlight-line \
     --layout=reverse --multi --min-height=20 --border \
     --border-label-pos=2 \
-    --color='header:italic:underline,label:blue' \
-    --preview-window='right,50%,border-left' \
+    --color='header:italic,label:blue' \
+    --preview-window='right,50%' \
     --bind='ctrl-/:change-preview-window(down,50%,border-top|hidden|)' "$@"
 }
 ```

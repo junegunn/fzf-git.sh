@@ -150,7 +150,8 @@ if [[ $- =~ i ]]; then
 
 # Redefine this function to change the options
 _fzf_git_fzf() {
-  fzf --height=50% --min-height=20 --tmux 90%,70% --style full \
+  fzf --height=50% --min-height=20 --tmux 90%,70% \
+    --style full --no-header-border \
     --layout=reverse --multi --border \
     --border-label-pos=2 \
     --color='header:italic,label:blue' \

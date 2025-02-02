@@ -16,6 +16,7 @@ Installation
 1. Install the latest version of [fzf][fzf]
     * (Optional) Install [bat](https://github.com/sharkdp/bat) for
       syntax-highlighted file previews
+    * Git v2.42.0 or later is required for the `git for-each-ref` binding
 1. Source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh) file from your .bashrc or .zshrc
 
 Usage

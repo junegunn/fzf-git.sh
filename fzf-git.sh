@@ -66,12 +66,12 @@ if [[ $1 = --list ]]; then
       git for-each-ref "$@" --sort=-creatordate --sort=-HEAD --color=$(__fzf_git_color) --format=$'%(if:equals=refs/remotes)%(refname:rstrip=-2)%(then)%(color:magenta)remote-branch%(else)%(if:equals=refs/heads)%(refname:rstrip=-2)%(then)%(color:brightgreen)branch%(else)%(if:equals=refs/tags)%(refname:rstrip=-2)%(then)%(color:brightcyan)tag%(else)%(if:equals=refs/stash)%(refname:rstrip=-2)%(then)%(color:brightred)stash%(else)%(color:white)%(refname:rstrip=-2)%(end)%(end)%(end)%(end)\t%(color:yellow)%(refname:short) %(color:green)(%(creatordate:relative))\t%(color:blue)%(subject)%(color:reset)' | column -ts$'\t'
     }
     hashes() {
-      git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=$(__fzf_git_color) "$@"
+      git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=$(__fzf_git_color) "$@" $LIST_OPTS
     }
     case "$1" in
       branches)
         echo 'CTRL-O (open in browser) ╱ ALT-A (show all branches)'
-        echo 'ALT-H (show commit hashes)'
+        echo 'ALT-H (list commit hashes)'
         branches
         ;;
       all-branches)
@@ -146,8 +146,7 @@ if [[ $1 = --list ]]; then
   fi
 fi
 
-if [[ $- =~ i ]]; then
-# -----------------------------------------------------------------------------
+if [[ $- =~ i ]] || [[ $1 = --run ]]; then # ----------------------------------
 
 # Redefine this function to change the options
 _fzf_git_fzf() {
@@ -201,8 +200,9 @@ _fzf_git_branches() {
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list branch {}" \
     --bind "alt-a:change-border-label(🌳 All branches)+reload:bash \"$__fzf_git\" --list all-branches" \
-    --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' \$(sed s/^..// <<< {} | cut -d' ' -f1) --" "$@" |
-  sed 's/^..//' | cut -d' ' -f1
+    --bind "alt-h:become:LIST_OPTS=\$(cut -c3- <<< {} | cut -d' ' -f1) bash \"$__fzf_git\" --run hashes" \
+    --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' \$(cut -c3- <<< {} | cut -d' ' -f1) --" "$@" |
+  sed 's/^\* //' | awk '{print $1}' # Slightly modified to work with hashes as well
 }
 
 _fzf_git_tags() {
@@ -290,7 +290,15 @@ _fzf_git_worktrees() {
     " "$@" |
   awk '{print $1}'
 }
+fi # --------------------------------------------------------------------------
 
+if [[ $1 = --run ]]; then
+  shift
+  type=$1
+  shift
+  eval "_fzf_git_$type" "$@"
+
+elif [[ $- =~ i ]]; then # ------------------------------------------------------
 if [[ -n "${BASH_VERSION:-}" ]]; then
   __fzf_git_init() {
     bind -m emacs-standard '"\er":  redraw-current-line'
@@ -331,5 +339,4 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
 fi
 __fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref worktrees
 
-# -----------------------------------------------------------------------------
-fi
+fi # --------------------------------------------------------------------------

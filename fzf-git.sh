@@ -76,6 +76,7 @@ if [[ $1 = --list ]]; then
         ;;
       all-branches)
         echo 'CTRL-O (open in browser)'
+        echo 'ALT-H (list commit hashes)'
         branches -a
         ;;
       hashes)

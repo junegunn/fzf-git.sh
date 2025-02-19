@@ -75,7 +75,7 @@ if [[ $1 = --list ]]; then
         branches
         ;;
       all-branches)
-        echo 'CTRL-O (open in browser)'
+        echo 'CTRL-O (open in browser) ╱ ALT-ENTER (accept without remote)'
         echo 'ALT-H (list commit hashes)'
         branches -a
         ;;
@@ -202,6 +202,7 @@ _fzf_git_branches() {
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list branch {}" \
     --bind "alt-a:change-border-label(🌳 All branches)+reload:bash \"$__fzf_git\" --list all-branches" \
     --bind "alt-h:become:LIST_OPTS=\$(cut -c3- <<< {} | cut -d' ' -f1) bash \"$__fzf_git\" --run hashes" \
+    --bind "alt-enter:become:printf '%s\n' {+} | cut -c3- | sed 's@.*/@@'" \
     --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' \$(cut -c3- <<< {} | cut -d' ' -f1) --" "$@" |
   sed 's/^\* //' | awk '{print $1}' # Slightly modified to work with hashes as well
 }

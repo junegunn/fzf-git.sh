@@ -65,7 +65,7 @@ Customization
 # Redefine this function to change the options
 _fzf_git_fzf() {
   fzf --height 50% --tmux 90%,70% \
-    --layout reverse --multi --min-height 20+ --border \
+    --layout reverse --multi --min-height 20 --border \
     --no-separator --header-border horizontal \
     --border-label-pos 2 \
     --color 'label:blue' \

@@ -71,22 +71,22 @@ if [[ $1 = --list ]]; then
     case "$1" in
       branches)
         echo $'CTRL-O (open in browser) ╱ ALT-A (show all branches)'
-        echo $'Enter (examine in Vim) / CTRL-C (checkout-switch)\n'
+        echo $'Enter (examine in Vim) / ALT-C (checkout-switch)\n'
         branches
         ;;
       all-branches)
         echo $'CTRL-O (open in browser)'
-        echo $'Enter (examine in Vim) / CTRL-C (checkout-switch)\n'
+        echo $'Enter (examine in Vim) / ALT-C (checkout-switch)\n'
         branches -a
         ;;
       hashes)
         echo $'CTRL-O (open in browser) ╱ CTRL-D (diff)\nCTRL-S (toggle sort) ╱ ALT-A (show all hashes)'
-        echo $'Enter (examine in Vim) / CTRL-C (checkout) / CTRL-P (toogle preview)\n'
+        echo $'Enter (examine in Vim) / ALT-C (checkout) / CTRL-P (toogle preview)\n'
         hashes
         ;;
       all-hashes)
         echo $'CTRL-O (open in browser) ╱ CTRL-D (diff)\nCTRL-S (toggle sort)'
-        echo $'Enter (examine in Vim) / CTRL-C (checkout) / CTRL-P (toogle preview)\n'
+        echo $'Enter (examine in Vim) / ALT-C (checkout) / CTRL-P (toogle preview)\n'
         hashes --all
         ;;
       refs)
@@ -202,7 +202,7 @@ _fzf_git_branches() {
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list branch {}" \
     --bind "alt-a:change-border-label(🌳 All branches)+reload:bash \"$__fzf_git\" --list all-branches" \
     --bind "enter:execute:sed 's/^..//' <<< {} | cut -d' ' -f1 | xargs -I % sh -c 'vim -c \":Gedit %\" < /dev/tty'" \
-    --bind "ctrl-c:become:(echo {} | sed 's/^..//' | cut -d' ' -f1 | xargs git switch > /dev/tty)" \
+    --bind "alt-c:become:(echo {} | sed 's/^..//' | cut -d' ' -f1 | xargs git switch > /dev/tty)" \
     --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' \$(sed s/^..// <<< {} | cut -d' ' -f1) --" "$@" |
   sed 's/^..//' | cut -d' ' -f1
 }
@@ -237,7 +237,7 @@ _fzf_git_hashes() {
     --header-lines 3 \
     --preview-window right,border-left,50% \
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list commit {}" \
-    --bind "ctrl-c:become:(echo {} | grep -o '[a-f0-9]\{7\}' | head -1 | xargs git checkout > /dev/tty)" \
+    --bind "alt-c:become:(echo {} | grep -o '[a-f0-9]\{7\}' | head -1 | xargs git checkout > /dev/tty)" \
     --bind "ctrl-y:execute:grep -o '[a-f0-9]\{7\}'  <<< {} | head -n 1 | xargs _fzf_git_checkout_commit " \
     --bind "ctrl-z:execute:(echo {} | grep -o '[a-f0-9]\{7\}' | head -1 | xargs -I % _fzf_git_checkout_commit %)" \
     --bind "ctrl-d:execute:grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git diff --color=$(__fzf_git_color) > /dev/tty" \

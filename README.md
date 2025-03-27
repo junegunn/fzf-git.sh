@@ -9,14 +9,14 @@ Each binding will allow you to browse through Git objects of a certain type,
 and select the objects you want to paste to your command-line.
 
 [fzf]: https://github.com/junegunn/fzf
-[fzf-tmux]: https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux
 
 Installation
 ------------
 
-1. Install the latest version of [fzf][fzf] (including [fzf-tmux][fzf-tmux])
+1. Install the latest version of [fzf][fzf]
     * (Optional) Install [bat](https://github.com/sharkdp/bat) for
       syntax-highlighted file previews
+    * Git v2.42.0 or later is required for the `git for-each-ref` binding
 1. Source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh) file from your .bashrc or .zshrc
 
 Usage
@@ -65,12 +65,13 @@ Customization
 ```sh
 # Redefine this function to change the options
 _fzf_git_fzf() {
-  fzf-tmux -p80%,60% -- \
-    --layout=reverse --multi --height=50% --min-height=20 --border \
-    --border-label-pos=2 \
-    --color='header:italic:underline,label:blue' \
-    --preview-window='right,50%,border-left' \
-    --bind='ctrl-/:change-preview-window(down,50%,border-top|hidden|)' "$@"
+  fzf --height 50% --tmux 90%,70% \
+    --layout reverse --multi --min-height 20+ --border \
+    --no-separator --header-border horizontal \
+    --border-label-pos 2 \
+    --color 'label:blue' \
+    --preview-window 'right,50%' --preview-border line \
+    --bind 'ctrl-/:change-preview-window(down,50%|hidden|)' "$@"
 }
 ```
 
@@ -89,3 +90,14 @@ gswt() {
   cd "$(_fzf_git_worktrees --no-multi)"
 }
 ```
+
+Environment Variables
+---------------------
+
+| Variable                | Description                                              | Default                                         |
+| ----------------------- | -------------------------------------------------------- | ----------------------------------------------- |
+| `BAT_STYLE`             | Specifies the style for displaying files using `bat`     | `full`                                          |
+| `FZF_GIT_CAT`           | Defines the preview command used for displaying the file | `bat --style=$BAT_STYLE --color=$FZF_GIT_COLOR` |
+| `FZF_GIT_COLOR`         | Set to `never` to suppress colors in the list            | `always`                                        |
+| `FZF_GIT_PAGER`         | Specifies the pager command for the preview window       | `$(git config --get core.pager)`                |
+| `FZF_GIT_PREVIEW_COLOR` | Set to `never` to suppress colors in the preview window  | `always`                                        |

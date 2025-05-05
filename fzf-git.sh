@@ -139,6 +139,56 @@ if [[ $1 = --list ]]; then
       url=${remote_url%.git}
     fi
 
+    # Handle Azure DevOps URLs
+    if [[ $remote_url =~ dev.azure.com ]]; then
+      # Remove .git suffix if present and any trailing slashes
+      clean_url=${remote_url%.git}
+      clean_url=${clean_url%/}
+
+      # Extract organization, project and repository
+      if [[ $remote_url =~ ^https ]]; then
+        org=$(echo "$clean_url" | sed -n 's|https://dev.azure.com/\([^/]*\)/.*|\1|p')
+        project=$(echo "$clean_url" | sed -n 's|https://dev.azure.com/[^/]*/\([^/]*\)/.*|\1|p')
+        repo=$(echo "$clean_url" | sed -n 's|.*/\([^/]*\)$|\1|p')
+      else
+        # Handle SSH format: git@ssh.dev.azure.com:v3/org/project/repo
+        org=$(echo "$clean_url" | sed -n 's|.*:v3/\([^/]*\)/.*|\1|p')
+        project=$(echo "$clean_url" | sed -n 's|.*:v3/[^/]*/\([^/]*\)/.*|\1|p')
+        repo=$(echo "$clean_url" | sed -n 's|.*:v3/[^/]*/[^/]*/\([^/]*\)$|\1|p')
+      fi
+
+      # Construct Azure DevOps URL format
+      case "$1" in
+        commit)
+          # For Azure DevOps, get full commit hash instead of shortened one
+          if [[ $2 =~ [a-f0-9]{40} ]]; then
+            # Extract full 40-char hash if it exists in the input
+            full_hash=$(grep -o "[a-f0-9]\{40\}" <<< "$2")
+          else
+            # If not in input, try to get it from git
+            short_hash=$(grep -o "[a-f0-9]\{7,\}" <<< "$2")
+            full_hash=$(git rev-parse "$short_hash" 2>/dev/null || echo "$hash")
+          fi
+          url="https://dev.azure.com/$org/$project/_git/$repo/commit/$full_hash"
+          # Clear path to avoid double appending
+          path=""
+          ;;
+        branch)
+          url="https://dev.azure.com/$org/$project/_git/$repo?path=/&version=GB$branch&_a=contents"
+          ;;
+        file)
+          url="https://dev.azure.com/$org/$project/_git/$repo?path=/$2&version=GB$branch&_a=contents"
+          ;;
+        tag)
+          # Extract the tag name without additional formatting if present
+          tag_name=$(echo "$2" | sed 's/^[* ]*//' | awk '{print $1}')
+          url="https://dev.azure.com/$org/$project/_git/$repo?version=GT$tag_name"
+          # Clear path to avoid double appending
+          path=""
+          ;;
+      esac
+    fi
+
     case "$(uname -s)" in
       Darwin) open "$url$path"     ;;
       *)      xdg-open "$url$path" ;;

@@ -110,7 +110,7 @@ if [[ $1 = --list ]]; then
     # Only supports GitHub for now
     case "$1" in
       commit)
-        hash=$(grep -o "[a-f0-9]\{7,\}" <<< "$2")
+        hash=$(grep -o "[a-f0-9]\{7,\}" <<< "$2" | head -n 1)
         path=/commit/$hash
         ;;
       branch|remote-branch)

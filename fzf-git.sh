@@ -140,8 +140,16 @@ if [[ $1 = --list ]]; then
     fi
 
     case "$(uname -s)" in
-      Darwin) open "$url$path"     ;;
-      *)      xdg-open "$url$path" ;;
+      Darwin)
+        open "$url$path"
+        ;;
+      *)
+        if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+          explorer.exe "$url$path"
+        else
+          xdg-open "$url$path"
+        fi
+        ;;
     esac
     exit 0
   fi

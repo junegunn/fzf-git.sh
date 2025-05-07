@@ -139,16 +139,15 @@ if [[ $1 = --list ]]; then
       url=${remote_url%.git}
     fi
 
-    case "$(uname -s)" in
-      Darwin)
+    case "$(uname -sr)" in
+      Darwin*)
         open "$url$path"
         ;;
+      *microsoft* | *Microsoft*)
+        explorer.exe "$url$path"
+        ;;
       *)
-        if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
-          explorer.exe "$url$path"
-        else
-          xdg-open "$url$path"
-        fi
+        xdg-open "$url$path"
         ;;
     esac
     exit 0

@@ -139,9 +139,16 @@ if [[ $1 = --list ]]; then
       url=${remote_url%.git}
     fi
 
-    case "$(uname -s)" in
-      Darwin) open "$url$path"     ;;
-      *)      xdg-open "$url$path" ;;
+    case "$(uname -sr)" in
+      Darwin*)
+        open "$url$path"
+        ;;
+      *microsoft* | *Microsoft*)
+        explorer.exe "$url$path"
+        ;;
+      *)
+        xdg-open "$url$path"
+        ;;
     esac
     exit 0
   fi

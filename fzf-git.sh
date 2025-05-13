@@ -222,6 +222,35 @@ _fzf_git_branches() {
   sed 's/^\* //' | awk '{print $1}' # Slightly modified to work with hashes as well
 }
 
+__gg_graph() {
+  git log --graph --oneline --all --decorate --color=$(__fzf_git_color .) \
+      --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' \
+      --abbrev-commit --date=iso --date-order
+}
+
+_fzf_git_graph() {
+  _fzf_git_check || return
+  local __gg_ref='$(sed "s/[^a-z0-9-]/_/g" <<< {} | sed "s/^_*\([a-z0-9]\+\)_-_.*$/\1/" | sed "s/[^a-z0-9]//g")'
+  local __gg_log="git log --color=$(__fzf_git_color) --decorate --stat --raw -p --ignore-space-change"
+
+  __gg_graph |
+    _fzf_git_fzf --height=100% \
+                 --preview-window='right,50%,border-left,hidden' \
+                 --ansi \
+                 --border-label '⛙ Git Graph' \
+                 --header $'ENTER: Open Log | CTRL-J: Select Ref\nCTRL-L: Toggle Log Preview | ALT-SHIFT-UP/DOWN: Half Page Up/Down Preview\nCTRL-/: Resize Preview' \
+                 --bind 'ctrl-l:toggle-preview' \
+                 --bind 'alt-shift-up:preview-half-page-up,alt-shift-down:preview-half-page-down' \
+                 --bind 'ctrl-/:change-preview-window(down,25%|50%|75%|hidden)' \
+                 --bind 'enter:show-preview' \
+                 --bind 'ctrl-j:execute(echo -n {})+abort' \
+                 --tiebreak begin \
+                 --preview-window down,border-top,40% \
+                 --color hl:underline,hl+:underline \
+                 --no-hscroll \
+                 --preview "sleep 0.75 && $__gg_log \"${__gg_ref}\"" | sed "s/[^a-z0-9-]/_/g" | sed "s/^_*\([a-z0-9]\+\)_-_.*$/\1/" | sed "s/[^a-z0-9]//g"
+}
+
 _fzf_git_tags() {
   _fzf_git_check || return
   git tag --sort -version:refname |
@@ -354,6 +383,6 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
     done
   }
 fi
-__fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref worktrees
+__fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref worktrees graph
 
 fi # --------------------------------------------------------------------------

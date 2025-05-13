@@ -32,6 +32,7 @@ Usage
 * <kbd>CTRL-G</kbd><kbd>CTRL-S</kbd> for **S**tashes
 * <kbd>CTRL-G</kbd><kbd>CTRL-L</kbd> for ref**l**ogs
 * <kbd>CTRL-G</kbd><kbd>CTRL-W</kbd> for **W**orktrees
+* <kbd>CTRL-G</kbd><kbd>CTRL-G</kbd> for log **G**raph (`git log --graph --pretty=format:'…'`)
 * <kbd>CTRL-G</kbd><kbd>CTRL-E</kbd> for **E**ach ref (`git for-each-ref`)
 
 > [!WARNING]

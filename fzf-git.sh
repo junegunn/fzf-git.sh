@@ -201,7 +201,7 @@ _fzf_git_branches() {
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list branch {}" \
     --bind "alt-a:change-border-label(🌳 All branches)+reload:bash \"$__fzf_git\" --list all-branches" \
-    --bind "enter:execute:sed 's/^..//' <<< {} | cut -d' ' -f1 | xargs -I % sh -c 'vim -c \":Gedit %\" < /dev/tty'" \
+    --bind "enter:execute:sed 's/^..//' <<< {} | cut -d' ' -f1 | xargs -I % sh -c '${EDITOR:-vim} -c \":Gedit %\" < /dev/tty'" \
     --bind "alt-c:become:(echo {} | sed 's/^..//' | cut -d' ' -f1 | xargs git switch > /dev/tty)" \
     --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' \$(sed s/^..// <<< {} | cut -d' ' -f1) --" "$@" |
   sed 's/^..//' | cut -d' ' -f1
@@ -242,7 +242,7 @@ _fzf_git_hashes() {
     --bind "ctrl-z:execute:(echo {} | grep -o '[a-f0-9]\{7\}' | head -1 | xargs -I % _fzf_git_checkout_commit %)" \
     --bind "ctrl-d:execute:grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git diff --color=$(__fzf_git_color) > /dev/tty" \
     --bind "alt-a:change-border-label(🍇 All hashes)+reload:bash \"$__fzf_git\" --list all-hashes" \
-    --bind "enter:execute:grep -o '[a-f0-9]\{7\}' <<< {} | head -n 1 | xargs -I % sh -c 'vim -c \":Gedit %\" < /dev/tty'" \
+    --bind "enter:execute:grep -o '[a-f0-9]\{7\}' <<< {} | head -n 1 | xargs -I % sh -c '${EDITOR:-vim} -c \":Gedit %\" < /dev/tty'" \
     --color hl:underline,hl+:underline \
     --preview "grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git show --color=$(__fzf_git_color .) | $(__fzf_git_pager)" "$@" |
   awk 'match($0, /[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]*/) { print substr($0, RSTART, RLENGTH) }'

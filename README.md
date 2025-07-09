@@ -24,6 +24,7 @@ Usage
 
 ### List of bindings
 
+* <kbd>CTRL-G</kbd><kbd>?</kbd> to show this list
 * <kbd>CTRL-G</kbd><kbd>CTRL-F</kbd> for **F**iles
 * <kbd>CTRL-G</kbd><kbd>CTRL-B</kbd> for **B**ranches
 * <kbd>CTRL-G</kbd><kbd>CTRL-T</kbd> for **T**ags

@@ -307,6 +307,23 @@ _fzf_git_worktrees() {
     " "$@" |
   awk '{print $1}'
 }
+
+_fzf_git_list_bindings(){
+  cat <<'EOF'
+
+CTRL-G ? to show this list
+CTRL-G CTRL-F for Files
+CTRL-G CTRL-B for Branches
+CTRL-G CTRL-T for Tags
+CTRL-G CTRL-R for Remotes
+CTRL-G CTRL-H for commit Hashes
+CTRL-G CTRL-S for Stashes
+CTRL-G CTRL-L for reflogs
+CTRL-G CTRL-W for Worktrees
+CTRL-G CTRL-E for Each ref (git for-each-ref)
+EOF
+}
+
 fi # --------------------------------------------------------------------------
 
 if [[ $1 = --run ]]; then
@@ -326,6 +343,10 @@ if [[ -n "${BASH_VERSION:-}" ]]; then
     local o c
     for o in "$@"; do
       c=${o:0:1}
+      if [[ $c == '?' ]]; then
+        bind -x '"\C-g'$c'": _fzf_git_list_bindings'
+        continue
+      fi
       bind -m emacs-standard '"\C-g\C-'$c'": " \C-u \C-a\C-k`_fzf_git_'$o'`\e\C-e\C-y\C-a\C-y\ey\C-h\C-e\er \C-h"'
       bind -m vi-command     '"\C-g\C-'$c'": "\C-z\C-g\C-'$c'\C-z"'
       bind -m vi-insert      '"\C-g\C-'$c'": "\C-z\C-g\C-'$c'\C-z"'
@@ -343,9 +364,14 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
   }
 
   __fzf_git_init() {
+    setopt localoptions nonomatch
     local m o
     for o in "$@"; do
-      eval "fzf-git-$o-widget() { local result=\$(_fzf_git_$o | __fzf_git_join); zle reset-prompt; LBUFFER+=\$result }"
+      if [[ ${o[1]} == "?" ]];then
+        eval "fzf-git-$o-widget() { zle -M '$(_fzf_git_list_bindings)' }"
+      else
+        eval "fzf-git-$o-widget() { local result=\$(_fzf_git_$o | __fzf_git_join); zle reset-prompt; LBUFFER+=\$result }"
+      fi
       eval "zle -N fzf-git-$o-widget"
       for m in emacs vicmd viins; do
         eval "bindkey -M $m '^g^${o[1]}' fzf-git-$o-widget"
@@ -354,6 +380,6 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
     done
   }
 fi
-__fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref worktrees
+__fzf_git_init files branches tags remotes hashes stashes lreflogs each_ref worktrees '?list_bindings'
 
 fi # --------------------------------------------------------------------------

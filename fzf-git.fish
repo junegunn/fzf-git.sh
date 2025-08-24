@@ -10,6 +10,6 @@ set --local fzf_git_sh_path (realpath (dirname fzf-git.sh))
 for command in $commands
     set --function key (string sub --end=1 $command)
 
-    eval "bind \cg$key \"__fzf_git_fish 'bash $fzf_git_sh_path/fzf-git.sh --run $command'\""
+    eval "bind \cg$key   \"__fzf_git_fish 'bash $fzf_git_sh_path/fzf-git.sh --run $command'\""
     eval "bind \cg\c$key \"__fzf_git_fish 'bash $fzf_git_sh_path/fzf-git.sh --run $command'\""
 end

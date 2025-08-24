@@ -4,9 +4,10 @@ end
 
 set --local commands branches each_ref files hashes lreflogs remotes stashes tags worktrees
 
-# Get the absolute path to fzf-git.sh to use in the key bindings to avoid
-# having to modify `$PATH`.
-set --local fzf_git_sh_path (realpath (dirname fzf-git.sh))
+# Get the absolute path to the parent directory of this script (i.e. the parent
+# directory of fzf-git.sh) to use in the key bindings to avoid having to modify
+# `$PATH`.
+set --local fzf_git_sh_path (realpath (status dirname))
 for command in $commands
     set --function key (string sub --end=1 $command)
 

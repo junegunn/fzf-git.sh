@@ -1,5 +1,5 @@
 function __fzf_git_fish
-    commandline --insert (eval $argv)
+    commandline --insert (eval $argv | string join ' ')
 end
 
 set --local commands branches each_ref files hashes lreflogs remotes stashes tags worktrees

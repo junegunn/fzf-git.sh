@@ -4,7 +4,7 @@ function __fzf_git_fish
     # having to modify `$PATH`.
     set --function fzf_git_sh_path (realpath (status dirname))
 
-    commandline --insert (eval "bash '$fzf_git_sh_path/fzf-git.sh'" --run $argv | string join ' ')
+    commandline --insert (bash "$fzf_git_sh_path/fzf-git.sh" --run $argv | string join ' ')
 end
 
 set --local commands branches each_ref files hashes lreflogs remotes stashes tags worktrees

@@ -10,7 +10,7 @@ end
 set --local commands branches each_ref files hashes lreflogs remotes stashes tags worktrees
 
 for command in $commands
-    set --function key (string sub --end=1 $command)
+    set --function key (string sub --length=1 $command)
 
     eval "bind \cg$key   '__fzf_git_sh $command'"
     eval "bind \cg\c$key '__fzf_git_sh $command'"

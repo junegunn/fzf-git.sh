@@ -21,7 +21,7 @@ Installation
     * bash or zsh
         * Source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh) file from your .bashrc or .zshrc
     * fish
-        * Source [fzf-git.fish](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.fish) from your fish.config
+        * Source [fzf-git.fish](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.fish) from your config.fish
 
 Usage
 -----

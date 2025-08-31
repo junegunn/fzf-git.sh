@@ -1,7 +1,7 @@
 fzf-git.sh
 ==========
 
-bash and zsh key bindings for Git objects, powered by [fzf][fzf].
+bash, zsh, and fish key bindings for Git objects, powered by [fzf][fzf].
 
 <img width="1680" alt="image" src="https://user-images.githubusercontent.com/700826/185568470-20d70937-eea4-4274-aec5-14dfe7ee2de6.png">
 
@@ -13,12 +13,15 @@ and select the objects you want to paste to your command-line.
 Installation
 ------------
 
-1. Install the latest version of [fzf][fzf]
+* Install the latest version of [fzf][fzf]
     * (Optional) Install [bat](https://github.com/sharkdp/bat) for
       syntax-highlighted file previews
     * Git v2.42.0 or later is required for the `git for-each-ref` binding
-1. Source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh) file from your .bashrc or .zshrc
-   or source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.fish) from your fish.config
+* Add it to your shell configuration file
+    * bash or zsh
+        * Source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh) file from your .bashrc or .zshrc
+    * fish
+        * Source [fzf-git.fish](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.fish) from your fish.config
 
 Usage
 -----

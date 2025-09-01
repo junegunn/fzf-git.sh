@@ -167,7 +167,10 @@ else
       --border-label-pos 2 \
       --color 'label:blue' \
       --preview-window 'right,50%' --preview-border line \
-      --bind 'ctrl-/:change-preview-window(down,50%|hidden|)' "$@"
+      --bind 'ctrl-/:change-preview-window(down,50%|hidden|)' "$@" \
+      --with-shell 'bash -c' # All `become`, `execute`,
+                             # and `preview` commands in this file were written
+                             # to be executed with bash.
   }
 fi
 

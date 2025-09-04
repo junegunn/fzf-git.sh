@@ -12,6 +12,8 @@ set --local commands branches each_ref files hashes lreflogs remotes stashes tag
 for command in $commands
     set --function key (string sub --length=1 $command)
 
-    eval "bind \cg$key   '__fzf_git_sh $command'"
-    eval "bind \cg\c$key '__fzf_git_sh $command'"
+    eval "bind -M default \cg$key   '__fzf_git_sh $command'"
+    eval "bind -M insert  \cg$key   '__fzf_git_sh $command'"
+    eval "bind -M default \cg\c$key '__fzf_git_sh $command'"
+    eval "bind -M insert  \cg\c$key '__fzf_git_sh $command'"
 end

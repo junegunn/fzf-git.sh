@@ -365,17 +365,19 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
 
   __fzf_git_init() {
     setopt localoptions nonomatch
-    local m o
+    local m o widgetname fname
     for o in "$@"; do
+      fname="_fzf_git_$o"
+      widgetname="${(q)fname}-widget"
       if [[ ${o[1]} == "?" ]];then
-        eval "fzf-git-$o-widget() { zle -M '$(_fzf_git_list_bindings)' }"
+        eval "${(q)widgetname}() { zle -M '$(_fzf_git_list_bindings)' }"
       else
-        eval "fzf-git-$o-widget() { local result=\$(_fzf_git_$o | __fzf_git_join); zle reset-prompt; LBUFFER+=\$result }"
+        eval "${(q)widgetname}() { local result=\$(${(q)fname} | __fzf_git_join); zle reset-prompt; LBUFFER+=\$result }"
       fi
-      eval "zle -N fzf-git-$o-widget"
+      eval "zle -N ${(q)widgetname}"
       for m in emacs vicmd viins; do
-        eval "bindkey -M $m '^g^${o[1]}' fzf-git-$o-widget"
-        eval "bindkey -M $m '^g${o[1]}' fzf-git-$o-widget"
+        eval "bindkey -M $m '^g^${o[1]}' ${(q)widgetname}"
+        eval "bindkey -M $m '^g${o[1]}' ${(q)widgetname}"
       done
     done
   }

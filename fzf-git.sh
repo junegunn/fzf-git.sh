@@ -364,7 +364,7 @@ elif [[ -n "${ZSH_VERSION:-}" ]]; then
   }
 
   __fzf_git_init() {
-    setopt localoptions nonomatch
+    setopt localoptions no_glob
     local m o
     for o in "$@"; do
       if [[ ${o[1]} == "?" ]];then

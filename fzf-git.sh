@@ -262,8 +262,8 @@ _fzf_git_stashes() {
   _fzf_git_check || return
   git stash list | _fzf_git_fzf \
     --border-label '🥡 Stashes ' \
-    --header 'CTRL-X (drop stash)' \
-    --bind 'ctrl-x:reload(git stash drop -q {1}; git stash list)' \
+    --header 'CTRL-BACKSPACE (drop stash)' \
+    --bind 'ctrl-backspace:reload(git stash drop -q {1}; git stash list)' \
     -d: --preview "git show --color=$(__fzf_git_color .) {1} | $(__fzf_git_pager)" "$@" |
   cut -d: -f1
 }
@@ -298,8 +298,8 @@ _fzf_git_worktrees() {
   _fzf_git_check || return
   git worktree list | _fzf_git_fzf \
     --border-label '🌴 Worktrees ' \
-    --header 'CTRL-X (remove worktree)' \
-    --bind 'ctrl-x:reload(git worktree remove {1} > /dev/null; git worktree list)' \
+    --header 'CTRL-BACKSPACE (remove worktree)' \
+    --bind 'ctrl-backspace:reload(git worktree remove {1} > /dev/null; git worktree list)' \
     --preview "
       git -c color.status=$(__fzf_git_color .) -C {1} status --short --branch
       echo

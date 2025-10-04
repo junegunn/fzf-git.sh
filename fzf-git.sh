@@ -358,8 +358,8 @@ if [[ -n "${BASH_VERSION:-}" ]]; then
 elif [[ -n "${ZSH_VERSION:-}" ]]; then
   __fzf_git_join() {
     local item
-    while read item; do
-      echo -n "${(q)item} "
+    while read -r item; do
+      echo -n -E "${(q)${(Q)item}} "
     done
   }
 

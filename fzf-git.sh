@@ -190,7 +190,7 @@ _fzf_git_files() {
 "$(tr -d '"' <<<{} | cut -c4-  | sed 's/.* -> //')"
 EOF
   (
-    git -c core.quotePath=false -c color.status=$(__fzf_git_color) status --short --no-branch
+    git -c core.quotePath=false -c color.status=$(__fzf_git_color) status --short --no-branch --untracked-files=all
     git -c core.quotePath=false ls-files "$root" | grep -vxFf <(
       git -c core.quotePath=false status -s | tr -d '"' | grep '^[^?]' | cut -c4-
       echo :

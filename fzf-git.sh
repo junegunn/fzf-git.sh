@@ -183,12 +183,14 @@ __fzf_git=$(readlink -f "$__fzf_git" 2> /dev/null || /usr/bin/ruby --disable-gem
 
 _fzf_git_files() {
   _fzf_git_check || return
-  local root query
+  local root query extract_file_name
   root=$(git rev-parse --show-toplevel)
   [[ $root != "$PWD" ]] && query='!../ '
+
   read -r -d "" extract_file_name <<'EOF'
 "$(tr -d '"' <<<{} | cut -c4-  | sed 's/.* -> //')"
 EOF
+
   (
     git -c core.quotePath=false -c color.status=$(__fzf_git_color) status --short --no-branch --untracked-files=all
     git -c core.quotePath=false ls-files "$root" | grep -vxFf <(

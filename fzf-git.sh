@@ -194,7 +194,7 @@ EOF
   (
     git -c core.quotePath=false -c color.status=$(__fzf_git_color) status --short --no-branch --untracked-files=all
     git -c core.quotePath=false ls-files "$root" | grep -vxFf <(
-      git -c core.quotePath=false status -s | tr -d '"' | grep '^[^?]' | cut -c4-
+      git -c core.quotePath=false status --short --untracked-files=no | tr -d '"' | cut -c4-
       echo :
     ) | sed 's/^/   /'
   ) |

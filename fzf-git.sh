@@ -189,16 +189,21 @@ _fzf_git_files() {
   read -r -d "" extract_file_name <<'EOF'
 "$(tr -d '"' <<<{} | cut -c4-  | sed 's/.* -> //')"
 EOF
-  (git -c color.status=$(__fzf_git_color) status --short --no-branch
-    git ls-files "$root" | grep -vxFf <(git status -s | grep '^[^?]' | cut -c4-; echo :) | sed 's/^/   /') |
-  _fzf_git_fzf -m --ansi --nth 2..,.. \
-    --border-label '📁 Files ' \
-    --header 'CTRL-O (open in browser) ╱ ALT-E (open in editor)' \
-    --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list file $extract_file_name" \
-    --bind "alt-e:execute:${EDITOR:-vim} $extract_file_name > /dev/tty" \
-    --query "$query" \
-    --preview "git diff --no-ext-diff --color=$(__fzf_git_color .) -- $extract_file_name | $(__fzf_git_pager); $(__fzf_git_cat) $extract_file_name" "$@" |
-  cut -c4- | sed 's/.* -> //'
+  (
+    git -c core.quotePath=false -c color.status=$(__fzf_git_color) status --short --no-branch
+    git -c core.quotePath=false ls-files "$root" | grep -vxFf <(
+      git -c core.quotePath=false status -s | tr -d '"' | grep '^[^?]' | cut -c4-
+      echo :
+    ) | sed 's/^/   /'
+  ) |
+    _fzf_git_fzf -m --ansi --nth 2..,.. \
+      --border-label '📁 Files ' \
+      --header 'CTRL-O (open in browser) ╱ ALT-E (open in editor)' \
+      --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list file $extract_file_name" \
+      --bind "alt-e:execute:${EDITOR:-vim} $extract_file_name > /dev/tty" \
+      --query "$query" \
+      --preview "git -c core.quotePath=false diff --no-ext-diff --color=$(__fzf_git_color .) -- $extract_file_name | $(__fzf_git_pager); $(__fzf_git_cat) $extract_file_name" "$@" |
+    cut -c4- | sed 's/.* -> //'
 }
 
 _fzf_git_branches() {

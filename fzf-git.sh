@@ -183,29 +183,77 @@ __fzf_git=$(readlink -f "$__fzf_git" 2> /dev/null || /usr/bin/ruby --disable-gem
 
 _fzf_git_files() {
   _fzf_git_check || return
-  local root query extract_file_name
+  local root query
+  local use_status_color=true
+  case $(__fzf_git_color) in
+  ''|never|false|0) use_status_color=false ;;
+  esac
   root=$(git rev-parse --show-toplevel)
   [[ $root != "$PWD" ]] && query='!../ '
 
-  read -r -d "" extract_file_name <<'EOF'
-"$(tr -d '"' <<<{} | cut -c4-  | sed 's/.* -> //')"
-EOF
+__paint_status_code() {
+  local code="$1"
+    if ! $use_status_color; then
+    printf '%s' "$code"
+    return
+  fi
 
+  local x=${code:0:1}
+  local y=${code:1:1}
+  local sp=${code:2:1}
+  local xy="$x$y"
+  # TODO: Respect user config colors
+  local color_reset=$'\e[0m'
+  local red_normal=$'\e[31m'
+  local green_normal=$'\e[32m'
+
+  case "${xy}" in '??' | '!!' | 'DD' | 'AU' | 'UD' | 'UA' | 'DU' | 'AA' | 'UU')
+    printf '%s%s%s%s' "${red_normal}" "${xy}" "${color_reset}" "${sp}"
+    ;;
+  *)
+    local cx="$x" cy="$y"
+    [[ $x != ' ' && $x != '.' ]] && cx="${green_normal}${x}${color_reset}"
+    [[ $y != ' ' && $y != '.' ]] && cy="${red_normal}${y}${color_reset}"
+    printf '%s%s%s' "${cx}" "${cy}" "${sp}"
+    ;;
+  esac
+}
+
+{
   (
-    git -c core.quotePath=false -c color.status=$(__fzf_git_color) status --short --no-branch --untracked-files=all
-    git -c core.quotePath=false ls-files "$root" | grep -vxFf <(
-      git -c core.quotePath=false status --short --untracked-files=no | tr -d '"' | cut -c4-
-      echo :
-    ) | sed 's/^/   /'
-  ) |
-    _fzf_git_fzf -m --ansi --nth 2..,.. \
+    git status --short --no-branch --untracked-files=all --porcelain=v1 -z |
+      while IFS= read -r -d '' rec; do
+        code=${rec:0:3} # "XY "
+        path=${rec:3}   # first pathname
+        xy=${code:0:2}
+        if [[ $code == [RC]* ]]; then
+          IFS= read -r -d '' from_path
+          colored_code="$(__paint_status_code "${code}")"
+          display="${colored_code}${path} -> ${from_path}" target="${path}"
+        else
+          colored_code=$(__paint_status_code "$code")
+          display="${colored_code}${path}" target=$path
+        fi
+        printf '%s\t%s\n' "${target}" "${display}"
+      done
+  )
+  (
+    git ls-files -z |
+      while IFS= read -r -d '' file_path; do
+        printf '%s\t   %s\n' "${file_path}" "${file_path}"
+      done
+  )
+} | awk -F'\t' '!seen[$1]++' |
+  _fzf_git_fzf -m --ansi --nth 2..,.. \
       --border-label '📁 Files ' \
+      --delimiter '\t' \
+      --with-nth 2.. \
+      --accept-nth 1 \
       --header 'CTRL-O (open in browser) ╱ ALT-E (open in editor)' \
-      --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list file $extract_file_name" \
-      --bind "alt-e:execute:${EDITOR:-vim} $extract_file_name > /dev/tty" \
+      --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list file {1}" \
+      --bind "alt-e:execute:${EDITOR:-vim} {1} > /dev/tty" \
       --query "$query" \
-      --preview "git -c core.quotePath=false diff --no-ext-diff --color=$(__fzf_git_color .) -- $extract_file_name | $(__fzf_git_pager); $(__fzf_git_cat) $extract_file_name" "$@" |
-    cut -c4- | sed 's/.* -> //'
+      --preview "git -c core.quotePath=false diff --no-ext-diff --color=$(__fzf_git_color .) -- {1} | $(__fzf_git_pager); $(__fzf_git_cat) {1}" "$@"
 }
 
 _fzf_git_branches() {

@@ -193,7 +193,7 @@ _fzf_git_files() {
 
 __paint_status_code() {
   local code="$1"
-    if ! $use_status_color; then
+  if ! $use_status_color; then
     printf '%s' "$code"
     return
   fi
@@ -201,7 +201,7 @@ __paint_status_code() {
   local x=${code:0:1}
   local y=${code:1:1}
   local sp=${code:2:1}
-  local xy="$x$y"
+  local xy="${x}${y}"
   # TODO: Respect user config colors
   local color_reset=$'\e[0m'
   local red_normal=$'\e[31m'
@@ -211,7 +211,7 @@ __paint_status_code() {
     printf '%s%s%s%s' "${red_normal}" "${xy}" "${color_reset}" "${sp}"
     ;;
   *)
-    local cx="$x" cy="$y"
+    local cx="${x}" cy="${y}"
     [[ $x != ' ' && $x != '.' ]] && cx="${green_normal}${x}${color_reset}"
     [[ $y != ' ' && $y != '.' ]] && cy="${red_normal}${y}${color_reset}"
     printf '%s%s%s' "${cx}" "${cy}" "${sp}"
@@ -224,21 +224,20 @@ __paint_status_code() {
     git status --short --no-branch --untracked-files=all --porcelain=v1 -z |
       while IFS= read -r -d '' rec; do
         code=${rec:0:3} # "XY "
-        path=${rec:3}   # first pathname
-        xy=${code:0:2}
+        file_path=${rec:3}
         if [[ $code == [RC]* ]]; then
           IFS= read -r -d '' from_path
           colored_code="$(__paint_status_code "${code}")"
-          display="${colored_code}${path} -> ${from_path}" target="${path}"
+          display="${colored_code}${file_path} -> ${from_path}"
         else
-          colored_code=$(__paint_status_code "$code")
-          display="${colored_code}${path}" target=$path
+          colored_code=$(__paint_status_code "${code}")
+          display="${colored_code}${file_path}"
         fi
-        printf '%s\t%s\n' "${target}" "${display}"
+        printf '%s\t%s\n' "${file_path}" "${display}"
       done
   )
   (
-    git ls-files -z |
+    git ls-files -z  "${root}" |
       while IFS= read -r -d '' file_path; do
         printf '%s\t   %s\n' "${file_path}" "${file_path}"
       done

@@ -186,58 +186,58 @@ _fzf_git_files() {
   local root query root_prefix
   local use_status_color=true
   case $(__fzf_git_color) in
-  ''|never|false|0) use_status_color=false ;;
+    '' | never | false | 0) use_status_color=false ;;
   esac
   root=$(git rev-parse --show-toplevel)
   root_prefix=$(git rev-parse --show-cdup)
   [[ $root != "$PWD" ]] && query='!../ '
 
-__paint_status_code() {
-  local code="$1"
-  if ! $use_status_color; then
-    printf '%s' "$code"
-    return
-  fi
+  __paint_status_code() {
+    local code="$1"
+    if ! $use_status_color; then
+      printf '%s' "$code"
+      return
+    fi
 
-  local x=${code:0:1}
-  local y=${code:1:1}
-  local sp=${code:2:1}
-  local xy="${x}${y}"
-  # TODO: Respect user config colors
-  local color_reset=$'\e[0m'
-  local red_normal=$'\e[31m'
-  local green_normal=$'\e[32m'
+    local x=${code:0:1}
+    local y=${code:1:1}
+    local sp=${code:2:1}
+    local xy="${x}${y}"
+    # TODO: Respect user config colors
+    local color_reset=$'\e[0m'
+    local red_normal=$'\e[31m'
+    local green_normal=$'\e[32m'
 
-  case "${xy}" in '??' | '!!' | 'DD' | 'AU' | 'UD' | 'UA' | 'DU' | 'AA' | 'UU')
-    printf '%s%s%s%s' "${red_normal}" "${xy}" "${color_reset}" "${sp}"
-    ;;
-  *)
-    local cx="${x}" cy="${y}"
-    [[ $x != ' ' && $x != '.' ]] && cx="${green_normal}${x}${color_reset}"
-    [[ $y != ' ' && $y != '.' ]] && cy="${red_normal}${y}${color_reset}"
-    printf '%s%s%s' "${cx}" "${cy}" "${sp}"
-    ;;
-  esac
-}
+    case "${xy}" in '??' | '!!' | 'DD' | 'AU' | 'UD' | 'UA' | 'DU' | 'AA' | 'UU')
+      printf '%s%s%s%s' "${red_normal}" "${xy}" "${color_reset}" "${sp}"
+      ;;
+    *)
+      local cx="${x}" cy="${y}"
+      [[ $x != ' ' && $x != '.' ]] && cx="${green_normal}${x}${color_reset}"
+      [[ $y != ' ' && $y != '.' ]] && cy="${red_normal}${y}${color_reset}"
+      printf '%s%s%s' "${cx}" "${cy}" "${sp}"
+      ;;
+    esac
+  }
 
-{
-  git status --short --no-branch --untracked-files=all --porcelain=v1 -z |
-    while IFS= read -r -d '' rec; do
-      code=${rec:0:3} # "XY "
-      file_path=${rec:3}
-      rel_path="${root_prefix}${file_path}"
-      if [[ $code == [RC]* ]]; then
-        IFS= read -r -d '' from_path
-        rel_from="${root_prefix}${from_path}"
-        display="$(__paint_status_code "$code")${rel_from} -> ${rel_path}"
-      else
-        display="$(__paint_status_code "$code")${rel_path}"
-      fi
-      printf '%s\t%s\0' "$rel_path" "$display"
-    done
-  git ls-files "${root}" -z --format='%(path)%x09   %(path)'
-} | tr '\0' '\n' | awk -F '\t' '!seen[$1]++' |
-  _fzf_git_fzf -m --ansi --nth 2..,.. \
+  {
+    git status --short --no-branch --untracked-files=all --porcelain=v1 -z |
+      while IFS= read -r -d '' rec; do
+        code=${rec:0:3} # "XY "
+        file_path=${rec:3}
+        rel_path="${root_prefix}${file_path}"
+        if [[ $code == [RC]* ]]; then
+          IFS= read -r -d '' from_path
+          rel_from="${root_prefix}${from_path}"
+          display="$(__paint_status_code "$code")${rel_from} -> ${rel_path}"
+        else
+          display="$(__paint_status_code "$code")${rel_path}"
+        fi
+        printf '%s\t%s\0' "$rel_path" "$display"
+      done
+    git ls-files "${root}" -z --format='%(path)%x09   %(path)'
+  } | tr '\0' '\n' | awk -F '\t' '!seen[$1]++' |
+    _fzf_git_fzf -m --ansi --nth 2..,.. \
       --border-label '📁 Files ' \
       --accept-nth 1 \
       --delimiter '\t' \

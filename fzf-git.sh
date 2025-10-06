@@ -183,12 +183,13 @@ __fzf_git=$(readlink -f "$__fzf_git" 2> /dev/null || /usr/bin/ruby --disable-gem
 
 _fzf_git_files() {
   _fzf_git_check || return
-  local root query
+  local root query root_prefix
   local use_status_color=true
   case $(__fzf_git_color) in
   ''|never|false|0) use_status_color=false ;;
   esac
   root=$(git rev-parse --show-toplevel)
+  root_prefix=$(git rev-parse --show-cdup)
   [[ $root != "$PWD" ]] && query='!../ '
 
 __paint_status_code() {
@@ -224,27 +225,27 @@ __paint_status_code() {
     while IFS= read -r -d '' rec; do
       code=${rec:0:3} # "XY "
       file_path=${rec:3}
+      rel_path="${root_prefix}${file_path}"
       if [[ $code == [RC]* ]]; then
         IFS= read -r -d '' from_path
-        colored_code="$(__paint_status_code "${code}")"
-        display="${colored_code}${file_path} -> ${from_path}"
+        rel_from="${root_prefix}${from_path}"
+        display="$(__paint_status_code "$code")${rel_from} -> ${rel_path}"
       else
-        colored_code="$(__paint_status_code "${code}")"
-        display="${colored_code}${file_path}"
+        display="$(__paint_status_code "$code")${rel_path}"
       fi
-      printf '%s\t%s\0' "$file_path" "$display"
+      printf '%s\t%s\0' "$rel_path" "$display"
     done
-  git ls-files -z --format='%(path)%x09   %(path)'
+  git ls-files "${root}" -z --format='%(path)%x09   %(path)'
 } | tr '\0' '\n' | awk -F '\t' '!seen[$1]++' |
   _fzf_git_fzf -m --ansi --nth 2..,.. \
       --border-label '📁 Files ' \
+      --accept-nth 1 \
       --delimiter '\t' \
       --with-nth 2.. \
-      --accept-nth 1 \
       --header 'CTRL-O (open in browser) ╱ ALT-E (open in editor)' \
       --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list file {1}" \
       --bind "alt-e:execute:${EDITOR:-vim} {1} > /dev/tty" \
-      --query "$query" \
+      --query "${query}" \
       --preview "git -c core.quotePath=false diff --no-ext-diff --color=$(__fzf_git_color .) -- {1} | $(__fzf_git_pager); $(__fzf_git_cat) {1}" "$@"
 }
 

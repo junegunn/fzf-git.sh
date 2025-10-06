@@ -220,29 +220,22 @@ __paint_status_code() {
 }
 
 {
-  (
-    git status --short --no-branch --untracked-files=all --porcelain=v1 -z |
-      while IFS= read -r -d '' rec; do
-        code=${rec:0:3} # "XY "
-        file_path=${rec:3}
-        if [[ $code == [RC]* ]]; then
-          IFS= read -r -d '' from_path
-          colored_code="$(__paint_status_code "${code}")"
-          display="${colored_code}${file_path} -> ${from_path}"
-        else
-          colored_code=$(__paint_status_code "${code}")
-          display="${colored_code}${file_path}"
-        fi
-        printf '%s\t%s\n' "${file_path}" "${display}"
-      done
-  )
-  (
-    git ls-files -z  "${root}" |
-      while IFS= read -r -d '' file_path; do
-        printf '%s\t   %s\n' "${file_path}" "${file_path}"
-      done
-  )
-} | awk -F'\t' '!seen[$1]++' |
+  git status --short --no-branch --untracked-files=all --porcelain=v1 -z |
+    while IFS= read -r -d '' rec; do
+      code=${rec:0:3} # "XY "
+      file_path=${rec:3}
+      if [[ $code == [RC]* ]]; then
+        IFS= read -r -d '' from_path
+        colored_code="$(__paint_status_code "${code}")"
+        display="${colored_code}${file_path} -> ${from_path}"
+      else
+        colored_code="$(__paint_status_code "${code}")"
+        display="${colored_code}${file_path}"
+      fi
+      printf '%s\t%s\0' "$file_path" "$display"
+    done
+  git ls-files -z --format='%(path)%x09   %(path)'
+} | tr '\0' '\n' | awk -F '\t' '!seen[$1]++' |
   _fzf_git_fzf -m --ansi --nth 2..,.. \
       --border-label '📁 Files ' \
       --delimiter '\t' \

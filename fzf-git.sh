@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 # shellcheck disable=SC2039
-[[ $0 = - ]] && return
+[[ $0 == - ]] && return
 
 __fzf_git_color() {
   if [[ -n $NO_COLOR ]]; then
@@ -52,11 +52,11 @@ __fzf_git_cat() {
 
 __fzf_git_pager() {
   local pager
-  pager="${FZF_GIT_PAGER:-${GIT_PAGER:-$(git config --get core.pager 2>/dev/null)}}"
+  pager="${FZF_GIT_PAGER:-${GIT_PAGER:-$(git config --get core.pager 2> /dev/null)}}"
   echo "${pager:-cat}"
 }
 
-if [[ $1 = --list ]]; then
+if [[ $1 == --list ]]; then
   shift
   if [[ $# -eq 1 ]]; then
     branches() {
@@ -103,7 +103,7 @@ if [[ $1 = --list ]]; then
     set -e
 
     branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
-    if [[ $branch = HEAD ]]; then
+    if [[ $branch == HEAD ]]; then
       branch=$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
     fi
 
@@ -195,7 +195,7 @@ EOF
     git -c core.quotePath=false -c color.status=$(__fzf_git_color) status --short --no-branch --untracked-files=all
     git -c core.quotePath=false ls-files "$root" | grep -vxFf <(
       git -c core.quotePath=false status --short --untracked-files=no |
-        cut -c4- |  sed -e 's/.* -> //' -e '/^"[^"\\]*"$/ { s/^"//;s/"$//; }'
+        cut -c4- | sed -e 's/.* -> //' -e '/^"[^"\\]*"$/ { s/^"//;s/"$//; }'
       echo :
     ) | sed 's/^/   /'
   ) |
@@ -213,7 +213,7 @@ _fzf_git_branches() {
   _fzf_git_check || return
 
   local shell
-  [[ -n "${BASH_VERSION:-}" ]] && shell=bash || shell=zsh
+  [[ -n ${BASH_VERSION:-} ]] && shell=bash || shell=zsh
 
   bash "$__fzf_git" --list branches |
   __fzf_git_fzf=$(declare -f _fzf_git_fzf) _fzf_git_fzf --ansi \
@@ -318,7 +318,7 @@ _fzf_git_worktrees() {
   awk '{print $1}'
 }
 
-_fzf_git_list_bindings(){
+_fzf_git_list_bindings() {
   cat <<'EOF'
 
 CTRL-G ? to show this list

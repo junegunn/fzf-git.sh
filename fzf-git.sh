@@ -188,13 +188,14 @@ _fzf_git_files() {
   [[ $root != "$PWD" ]] && query='!../ '
 
   read -r -d "" extract_file_name <<'EOF'
-"$(tr -d '"' <<<{} | cut -c4-  | sed 's/.* -> //')"
+"$(cut -c4- <<< {} | sed 's/.* -> //;s/^"//;s/"$//;s/\\"/"/g')"
 EOF
 
   (
     git -c core.quotePath=false -c color.status=$(__fzf_git_color) status --short --no-branch --untracked-files=all
     git -c core.quotePath=false ls-files "$root" | grep -vxFf <(
-      git -c core.quotePath=false status --short --untracked-files=no | tr -d '"' | cut -c4-
+      git -c core.quotePath=false status --short --untracked-files=no |
+        cut -c4- |  sed -e 's/.* -> //' -e '/^"[^"\\]*"$/ { s/^"//;s/"$//; }'
       echo :
     ) | sed 's/^/   /'
   ) |

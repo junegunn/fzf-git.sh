@@ -354,7 +354,7 @@ if [[ -n "${BASH_VERSION:-}" ]]; then
     for o in "$@"; do
       c=${o:0:1}
       if [[ $c == '?' ]]; then
-        bind -x '"\C-g'$c'": _fzf_git_list_bindings'
+        bind -x "\"\C-g$c\": _fzf_git_list_bindings"
         continue
       fi
       bind -m emacs-standard '"\C-g\C-'$c'": " \C-u \C-a\C-k`_fzf_git_'$o'`\e\C-e\C-y\C-a\C-y\ey\C-h\C-e\er \C-h"'

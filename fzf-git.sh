@@ -203,7 +203,7 @@ EOF
       --border-label '📁 Files ' \
       --header 'CTRL-O (open in browser) ╱ ALT-E (open in editor)' \
       --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list file $extract_file_name" \
-      --bind "alt-e:execute:${EDITOR:-vim} $extract_file_name > /dev/tty" \
+      --bind "alt-e:execute:${EDITOR:-vim} $extract_file_name < /dev/tty > /dev/tty" \
       --query "$query" \
       --preview "git -c core.quotePath=false diff --no-ext-diff --color=$(__fzf_git_color .) -- $extract_file_name | $(__fzf_git_pager); $(__fzf_git_cat) $extract_file_name" "$@" |
     cut -c4- | sed 's/.* -> //'
@@ -298,7 +298,7 @@ _fzf_git_each_ref() {
     --no-hscroll \
     --bind 'ctrl-/:change-preview-window(down,70%|hidden|)' \
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list {1} {2}" \
-    --bind "alt-e:execute:${EDITOR:-vim} <(git show {2}) > /dev/tty" \
+    --bind "alt-e:execute:${EDITOR:-vim} <(git show {2}) < /dev/tty > /dev/tty" \
     --bind "alt-a:change-border-label(🍀 Every ref)+reload:bash \"$__fzf_git\" --list all-refs" \
     --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' {2} --" "$@" |
   awk '{print $2}'

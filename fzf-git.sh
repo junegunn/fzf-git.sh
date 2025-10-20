@@ -139,14 +139,24 @@ if [[ $1 == --list ]]; then
       url=${remote_url%.git}
     fi
 
-    case "$(uname -sr)" in
-      Darwin*)
+    case "$OSTYPE" in
+      darwin*)
         open "$url$path"
         ;;
-      *microsoft* | *Microsoft*)
-        explorer.exe "$url$path"
+      msys)
+        # Git-Bash on Windows
+        start "$url$path"
+        ;;
+      linux*)
+        # Handle WSL on Windows
+        if uname -a | grep -i -q Microsoft && command -v powershell.exe; then
+          powershell.exe -NoProfile start "$url$path"
+        else
+          xdg-open "$url$path"
+        fi
         ;;
       *)
+        # fall back to xdg-open for BSDs, etc.
         xdg-open "$url$path"
         ;;
     esac

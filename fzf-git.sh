@@ -185,7 +185,7 @@ _fzf_git_files() {
   _fzf_git_check || return
   local root query extract_file_name
   root=$(git rev-parse --show-toplevel)
-  [[ $root != "$PWD" ]] && query='!../ '
+  [[ -n "$(git rev-parse --show-prefix)" ]] && query='!../ '
 
   read -r -d "" extract_file_name <<'EOF'
 "$(cut -c4- <<< {} | sed 's/.* -> //;s/^"//;s/"$//;s/\\"/"/g')"

@@ -81,12 +81,12 @@ if [[ $1 == --list ]]; then
         ;;
       hashes)
         echo 'CTRL-O (open in browser) ╱ CTRL-D (diff)'
-        echo 'CTRL-S (toggle sort) ╱ ALT-A (show all hashes)'
+        echo 'CTRL-S (toggle sort) ╱ ALT-F (list files) ╱ ALT-A (show all hashes)'
         hashes
         ;;
       all-hashes)
         echo 'CTRL-O (open in browser) ╱ CTRL-D (diff)'
-        echo 'CTRL-S (toggle sort)'
+        echo 'CTRL-S (toggle sort) ╱ ALT-F (list files)'
         hashes --all
         ;;
       refs)
@@ -213,10 +213,25 @@ EOF
       --border-label '📁 Files ' \
       --header 'CTRL-O (open in browser) ╱ ALT-E (open in editor)' \
       --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list file $extract_file_name" \
-      --bind "alt-e:execute:${EDITOR:-vim} $extract_file_name < /dev/tty > /dev/tty" \
+      --bind "alt-e:execute:${EDITOR:-vim} $extract_file_name" \
       --query "$query" \
       --preview "git -c core.quotePath=false diff --no-ext-diff --color=$(__fzf_git_color .) -- $extract_file_name | $(__fzf_git_pager); $(__fzf_git_cat) $extract_file_name" "$@" |
     cut -c4- | sed 's/.* -> //'
+}
+
+_fzf_git_tree_files() {
+  _fzf_git_check || return
+
+  local treeish
+  for treeish in "$@"; do
+    git diff-tree --no-commit-id --name-only "$treeish" -r
+  done | sort -u |
+    _fzf_git_fzf -m \
+      --border-label "📂 Files in $* " \
+      --header 'CTRL-O (open in browser) ╱ ALT-E (open in editor)' \
+      --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list file {}" \
+      --bind "alt-e:execute:${EDITOR:-vim} {}" \
+      --preview "git -c core.quotePath=false diff --no-ext-diff --color=$(__fzf_git_color .) -- {} | $(__fzf_git_pager); $(__fzf_git_cat) {}"
 }
 
 _fzf_git_branches() {
@@ -261,9 +276,26 @@ _fzf_git_hashes() {
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list commit {}" \
     --bind "ctrl-d:execute:grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git diff --color=$(__fzf_git_color) > /dev/tty" \
     --bind "alt-a:change-border-label(🍇 All hashes)+reload:bash \"$__fzf_git\" --list all-hashes" \
+    --bind "alt-f:become:echo ::tree_files;
+      awk 'match(\$0, /[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]*/) { print substr(\$0, RSTART, RLENGTH) }' {+f} |
+        xargs bash \"$__fzf_git\" --run tree_files" \
     --color hl:underline,hl+:underline \
     --preview "grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git show --color=$(__fzf_git_color .) | $(__fzf_git_pager)" "$@" |
-  awk 'match($0, /[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]*/) { print substr($0, RSTART, RLENGTH) }'
+  awk '
+    NR==1 && $0=="::tree_files" {
+      mode="tree_files"
+      next
+    }
+
+    mode=="tree_files" {
+      print
+      next
+    }
+
+    match($0, /[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]*/) {
+      print substr($0, RSTART, RLENGTH)
+    }
+  '
 }
 
 _fzf_git_remotes() {

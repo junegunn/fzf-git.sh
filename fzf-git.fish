@@ -4,8 +4,14 @@ function __fzf_git_sh
     # having to modify `$PATH`.
     set --function fzf_git_sh_path (realpath (status dirname))
 
-    commandline --insert (SHELL=bash bash "$fzf_git_sh_path/fzf-git.sh" --run $argv | string join ' ')
-    commandline -f repaint
+    set --function result (SHELL=bash bash "$fzf_git_sh_path/fzf-git.sh" --run $argv | string join ' ')
+
+    if status is-command-substitution && test -n "$result"
+        echo -- $result
+    else
+        commandline --insert $result
+        commandline -f repaint
+    end
 end
 
 set --local commands branches each_ref files hashes lreflogs remotes stashes tags worktrees

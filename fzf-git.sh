@@ -94,7 +94,7 @@ if [[ $1 == --list ]]; then
         refs --exclude='refs/remotes'
         ;;
       all-refs)
-        echo 'CTRL-O (open in browser) ╱ ALT-E (examine in editor)'
+        echo 'CTRL-O (open in browser) ╱ ALT-E (examine in editor) ╱ ALT-ENTER (accept without remote)'
         refs
         ;;
       *) exit 1 ;;
@@ -344,8 +344,10 @@ _fzf_git_each_ref() {
     --bind "ctrl-o:execute-silent:bash \"$__fzf_git\" --list {1} {2}" \
     --bind "alt-e:execute:${EDITOR:-vim} <(git show {2}) < /dev/tty > /dev/tty" \
     --bind "alt-a:change-border-label(🍀 Every ref)+reload:bash \"$__fzf_git\" --list all-refs" \
-    --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' {2} --" "$@" |
-  awk '{print $2}'
+    --bind "alt-enter:become:printf '%s\n' {+2} | sed 's@[^/]*/@@'" \
+    --preview "git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' {2} --" \
+    --accept-nth 2 \
+    "$@"
 }
 
 _fzf_git_worktrees() {

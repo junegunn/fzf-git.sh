@@ -20,13 +20,12 @@ function __fzf_git_sh
     end
 end
 
-set --local commands branches each_ref files hashes lreflogs remotes stashes tags worktrees list_bindings
+set --local commands branches each_ref files hashes lreflogs remotes stashes tags worktrees
+
+bind -M default 'ctrl-g,?' '__fzf_git_sh list_bindings'
+bind -M insert  'ctrl-g,?' '__fzf_git_sh list_bindings'
 
 for command in $commands
-    if test "$command" = list_bindings
-			eval "bind 'ctrl-g,?' '__fzf_git_sh $command'"
-			continue
-    end
     set --function key (string sub --length=1 $command)
 
     eval "bind -M default \cg$key   '__fzf_git_sh $command'"

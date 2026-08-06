@@ -222,9 +222,10 @@ EOF
 _fzf_git_tree_files() {
   _fzf_git_check || return
 
-  local treeish
+  local treeish cdup
+  cdup="$(git rev-parse --show-cdup)"
   for treeish in "$@"; do
-    git diff-tree --root --no-commit-id --name-only "$treeish" -r
+    git diff-tree --root --no-commit-id --name-only --line-prefix="$cdup" "$treeish" -r
   done | sort -u |
     _fzf_git_fzf -m \
       --border-label "📂 Files in $* " \

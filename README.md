@@ -75,7 +75,7 @@ _fzf_git_fzf() {
     --border-label-pos 2 \
     --color 'label:blue' \
     --preview-window 'right,50%' --preview-border line \
-    --bind 'ctrl-/:change-preview-window(down,50%|hidden|)' "$@"
+    --bind "${FZF_GIT_KEY_TOGGLE_PREVIEW:-ctrl-/}:change-preview-window(down,50%|hidden|)" "$@"
 }
 ```
 
@@ -98,10 +98,67 @@ gswt() {
 Environment Variables
 ---------------------
 
+### General
+
 | Variable                | Description                                              | Default                                         |
 | ----------------------- | -------------------------------------------------------- | ----------------------------------------------- |
 | `BAT_STYLE`             | Specifies the style for displaying files using `bat`     | `full`                                          |
 | `FZF_GIT_CAT`           | Defines the preview command used for displaying the file | `bat --style=$BAT_STYLE --color=$FZF_GIT_COLOR` |
 | `FZF_GIT_COLOR`         | Set to `never` to suppress colors in the list            | `always`                                        |
+| `FZF_GIT_FZF_CUSTOM_ARGS` | Appends custom arguments to every fzf invocation       |                                                 |
 | `FZF_GIT_PAGER`         | Specifies the pager command for the preview window       | `$(git config --get core.pager)`                |
 | `FZF_GIT_PREVIEW_COLOR` | Set to `never` to suppress colors in the preview window  | `always`                                        |
+
+### Inside fzf
+
+Binding values use the key names accepted by [fzf], such as `ctrl-e` or `f2`.
+Export them so that bindings and their labels are also available to child
+processes.
+
+```sh
+export FZF_GIT_KEY_OPEN_EDITOR=f2
+export FZF_GIT_KEY_SHOW_ALL=ctrl-a
+```
+
+| Variable                            | Action                                      | Default     |
+| ----------------------------------- | ------------------------------------------- | ----------- |
+| `FZF_GIT_KEY_ACCEPT_WITHOUT_REMOTE` | Accept a ref without its remote prefix      | `alt-enter` |
+| `FZF_GIT_KEY_DROP_STASH`            | Drop the selected stash                     | `ctrl-x`    |
+| `FZF_GIT_KEY_LIST_FILES`            | List files from the selected commits        | `alt-f`     |
+| `FZF_GIT_KEY_LIST_HASHES`           | List commit hashes for the selected branch  | `alt-h`     |
+| `FZF_GIT_KEY_OPEN_BROWSER`          | Open the selected object in the web browser | `ctrl-o`    |
+| `FZF_GIT_KEY_OPEN_EDITOR`           | Open the selected object in the editor      | `alt-e`     |
+| `FZF_GIT_KEY_REMOVE_WORKTREE`       | Remove the selected worktree                | `ctrl-x`    |
+| `FZF_GIT_KEY_SHOW_ALL`              | Include remote branches, hashes, or refs    | `alt-a`     |
+| `FZF_GIT_KEY_SHOW_DIFF`             | Show the selected commit's diff             | `ctrl-d`    |
+| `FZF_GIT_KEY_TOGGLE_PREVIEW`        | Change the preview window layout            | `ctrl-/`    |
+| `FZF_GIT_KEY_TOGGLE_RAW`            | Toggle raw mode                             | `alt-r`     |
+| `FZF_GIT_KEY_TOGGLE_SORT`           | Toggle sorting                              | `ctrl-s`    |
+
+### Shell launcher bindings
+
+Launcher values must be single alphanumeric characters, except that the help
+key can also be `?`. The prefix is always combined with `CTRL`; action keys are
+bound both with and without `CTRL`. For example, these settings bind files to
+<kbd>CTRL-X</kbd><kbd>P</kbd> and <kbd>CTRL-X</kbd><kbd>CTRL-P</kbd>:
+
+```sh
+export FZF_GIT_LAUNCHER_PREFIX=x
+export FZF_GIT_LAUNCHER_FILES=p
+```
+
+Set launcher variables before sourcing the script.
+
+| Variable                       | Action                     | Default |
+| ------------------------------ | -------------------------- | ------- |
+| `FZF_GIT_LAUNCHER_PREFIX`      | Prefix for every launcher  | `g`     |
+| `FZF_GIT_LAUNCHER_FILES`       | List files                 | `f`     |
+| `FZF_GIT_LAUNCHER_BRANCHES`    | List branches              | `b`     |
+| `FZF_GIT_LAUNCHER_TAGS`        | List tags                  | `t`     |
+| `FZF_GIT_LAUNCHER_REMOTES`     | List remotes               | `r`     |
+| `FZF_GIT_LAUNCHER_HASHES`      | List commit hashes         | `h`     |
+| `FZF_GIT_LAUNCHER_STASHES`     | List stashes               | `s`     |
+| `FZF_GIT_LAUNCHER_REFLOGS`     | List reflogs               | `l`     |
+| `FZF_GIT_LAUNCHER_WORKTREES`   | List worktrees             | `w`     |
+| `FZF_GIT_LAUNCHER_EACH_REF`    | List each ref              | `e`     |
+| `FZF_GIT_LAUNCHER_HELP`        | Show the binding list      | `?`     |

@@ -1,7 +1,7 @@
 fzf-git.sh
 ==========
 
-bash, zsh, and fish key bindings for Git objects, powered by [fzf][fzf].
+bash, zsh, fish, and tmux key bindings for Git objects, powered by [fzf][fzf].
 
 <img width="1680" alt="image" src="https://user-images.githubusercontent.com/700826/185568470-20d70937-eea4-4274-aec5-14dfe7ee2de6.png">
 
@@ -22,6 +22,8 @@ Installation
         * Source [fzf-git.sh](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh) file from your .bashrc or .zshrc
     * fish
         * Source [fzf-git.fish](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.fish) from your config.fish
+    * tmux
+        * Run [fzf-git.tmux](https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.tmux) from your .tmux.conf
 
 Usage
 -----
@@ -56,6 +58,49 @@ Usage
 > [!WARNING]
 > If zsh's `KEYTIMEOUT` is too small (e.g. 1), you may not be able
 > to hit two keys in time.
+
+### tmux bindings
+
+The shell bindings are only available on the command-line, so they cannot be
+used when the pane is running another program. [fzf-git.tmux][tmux] binds the
+same list of commands to tmux keys, which work in any pane.
+
+```sh
+# ~/.tmux.conf
+run-shell /path/to/fzf-git.tmux
+```
+
+`fzf-git.tmux` expects to find `fzf-git.sh` next to it, so keep the two files
+in the same directory.
+
+The keys are the same as above, with <kbd>PREFIX</kbd><kbd>g</kbd> in place of
+<kbd>CTRL-G</kbd>. So <kbd>PREFIX</kbd><kbd>g</kbd><kbd>f</kbd> is for Files,
+and <kbd>PREFIX</kbd><kbd>g</kbd><kbd>?</kbd> shows the list. Set
+`@fzf-git-key` to use a different key after the prefix key. The option is read
+when the bindings are created, so set it before `run-shell`.
+
+```sh
+set -g @fzf-git-key G
+run-shell /path/to/fzf-git.tmux
+```
+
+fzf starts in a floating pane, in the working directory of the pane it was
+started from, and the selected objects are sent to that pane as if you typed
+them.
+
+> [!NOTE]
+> A floating pane requires tmux 3.7 or later. On older versions, fzf starts
+> in a popup instead.
+
+> [!NOTE]
+> The finder does not load your shell configuration file, so `_fzf_git_fzf`
+> redefined there has no effect. Use the tmux environment instead.
+>
+> ```sh
+> set-environment -g FZF_GIT_PAGER delta
+> ```
+
+[tmux]: https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.tmux
 
 ### Inside fzf
 

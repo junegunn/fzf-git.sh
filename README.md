@@ -41,6 +41,9 @@ Usage
 * <kbd>CTRL-G</kbd><kbd>CTRL-W</kbd> for **W**orktrees
 * <kbd>CTRL-G</kbd><kbd>CTRL-E</kbd> for **E**ach ref (`git for-each-ref`)
 
+The **F**iles binding works outside a git repository as well, where it falls
+back to the file search of fzf.
+
 > [!WARNING]
 > You may have issues with these bindings in the following cases:
 >

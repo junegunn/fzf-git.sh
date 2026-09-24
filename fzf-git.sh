@@ -192,8 +192,24 @@ __fzf_git=${BASH_SOURCE[0]:-${(%):-%x}}
 __fzf_git=$(readlink -f "$__fzf_git" 2> /dev/null || /usr/bin/ruby --disable-gems -e 'puts File.expand_path(ARGV.first)' "$__fzf_git" 2> /dev/null)
 
 _fzf_git_files() {
-  _fzf_git_check || return
   local root query extract_file_name
+
+  # Outside a git repository, fall back to the file search of fzf.
+  # --force-tty-in is required when the caller has no tty on its standard
+  # input, which is the case for the tmux bindings.
+  if ! git rev-parse > /dev/null 2>&1; then
+    root=$PWD
+    if [[ -n $HOME ]] && [[ $root == "$HOME" || $root == "$HOME"/* ]]; then
+      root="~${root#"$HOME"}"
+    fi
+    _fzf_git_fzf -m --force-tty-in \
+      --border-label "📁 Files in $root " \
+      --header 'ALT-E (open in editor)' \
+      --bind "alt-e:execute:${EDITOR:-vim} {}" \
+      --preview "$(__fzf_git_cat) {}" "$@"
+    return
+  fi
+
   root=$(git rev-parse --show-toplevel)
   [[ -n "$(git rev-parse --show-prefix)" ]] && query='!../ '
 

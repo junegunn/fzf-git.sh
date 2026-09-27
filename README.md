@@ -103,7 +103,13 @@ them.
 > set-environment -g FZF_GIT_PAGER delta
 > ```
 
+> [!TIP]
+> [tmux-fzf-complete][complete] completes into a pane the same way, for the
+> things that are not Git objects: files, directories, and the URLs, paths, and
+> sentences on the screen.
+
 [tmux]: https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.tmux
+[complete]: https://github.com/junegunn/tmux-fzf-complete
 
 ### Inside fzf
 

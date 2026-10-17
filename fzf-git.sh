@@ -408,6 +408,15 @@ if [[ $1 = --run ]]; then
 
 elif [[ $- =~ i ]]; then # ------------------------------------------------------
 if [[ -n "${BASH_VERSION:-}" ]]; then
+  __fzf_git_bash_insert() {
+    local result
+    result=$("$@" || :)
+    [[ -n $result ]] || return 0
+
+    READLINE_LINE="${READLINE_LINE:0:READLINE_POINT}${result} ${READLINE_LINE:READLINE_POINT}"
+    READLINE_POINT=$((READLINE_POINT + ${#result} + 1))
+  }
+
   __fzf_git_init() {
     bind -m emacs-standard '"\er":  redraw-current-line'
     bind -m emacs-standard '"\C-z": vi-editing-mode'
@@ -421,10 +430,11 @@ if [[ -n "${BASH_VERSION:-}" ]]; then
         bind -x "\"\C-g$c\": _fzf_git_list_bindings"
         continue
       fi
-      bind -m emacs-standard '"\C-g\C-'$c'": " \C-u \C-a\C-k`_fzf_git_'$o'`\e\C-e\C-y\C-a\C-y\ey\C-h\C-e\er \C-h"'
+      eval "_fzf_git_${o}_widget() { __fzf_git_bash_insert _fzf_git_${o}; }"
+      bind -m emacs-standard -x '"\C-g\C-'$c'":_fzf_git_'$o'_widget'
       bind -m vi-command     '"\C-g\C-'$c'": "\C-z\C-g\C-'$c'\C-z"'
       bind -m vi-insert      '"\C-g\C-'$c'": "\C-z\C-g\C-'$c'\C-z"'
-      bind -m emacs-standard '"\C-g'$c'":    " \C-u \C-a\C-k`_fzf_git_'$o'`\e\C-e\C-y\C-a\C-y\ey\C-h\C-e\er \C-h"'
+      bind -m emacs-standard -x '"\C-g'$c'":_fzf_git_'$o'_widget'
       bind -m vi-command     '"\C-g'$c'":    "\C-z\C-g'$c'\C-z"'
       bind -m vi-insert      '"\C-g'$c'":    "\C-z\C-g'$c'\C-z"'
     done

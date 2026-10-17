@@ -15,6 +15,9 @@
 # Options, set before run-shell:
 #
 #   set -g @fzf-git-key g  # Key to press after the prefix key
+#
+# If pr.fzf from https://github.com/junegunn/everything.fzf is in $PATH,
+# p is bound to it to send the numbers of the selected pull requests.
 
 __fzf_git_tmux=${BASH_SOURCE[0]:-$0}
 __fzf_git_tmux=$(readlink -f "$__fzf_git_tmux" 2> /dev/null || /usr/bin/ruby --disable-gems -e 'puts File.expand_path(ARGV.first)' "$__fzf_git_tmux" 2> /dev/null)
@@ -34,6 +37,9 @@ l lreflogs for reflogs
 w worktrees for Worktrees
 e each_ref for Each ref (git for-each-ref)
 EOF
+  if command -v pr.fzf > /dev/null; then
+    echo 'p prs for Pull requests (pr.fzf)'
+  fi
 }
 
 __fzf_git_key() {
@@ -87,7 +93,7 @@ fi
 
 # Reported here instead of on installation, because a message has nowhere to
 # go while .tmux.conf is being processed
-if [[ ! -r $__fzf_git ]]; then
+if [[ $1 != prs ]] && [[ ! -r $__fzf_git ]]; then
   tmux display-message "fzf-git.sh not found in $(dirname "$__fzf_git_tmux")"
   exit 0
 fi
@@ -96,9 +102,17 @@ fi
 dir=$(tmux display-message -p -t "$TMUX_PANE" '#{pane_current_path}')
 [[ -d $dir ]] && cd "$dir"
 
-# SHELL is forced to bash, like in fzf-git.fish, because the tmux server
-# environment carries the shell of whoever started it
-result=$(SHELL=bash bash "$__fzf_git" --run "$1" | __fzf_git_join)
+if [[ $1 == prs ]]; then
+  # Enter prints the numbers instead of checking out the pull requests. Other
+  # output, such as "No pull requests", is dropped. '#' is removed so that the
+  # numbers need no quoting.
+  result=$(pr.fzf --multi --bind 'enter:become:printf "%s\n" {+1}' |
+             sed -n 's/^#\([0-9][0-9]*\)$/\1/p' | __fzf_git_join)
+else
+  # SHELL is forced to bash, like in fzf-git.fish, because the tmux server
+  # environment carries the shell of whoever started it
+  result=$(SHELL=bash bash "$__fzf_git" --run "$1" | __fzf_git_join)
+fi
 [[ -n $result ]] && tmux send-keys -t "$TMUX_PANE" -l -- "$result "
 
 # tmux opens a window to report a non-zero exit status of a run-shell command

@@ -87,6 +87,11 @@ set -g @fzf-git-key G
 run-shell /path/to/fzf-git.tmux
 ```
 
+If [pr.fzf][pr] is in `$PATH`, <kbd>PREFIX</kbd><kbd>g</kbd><kbd>p</kbd> is
+also bound to it, to send the numbers of the selected pull requests.
+
+[pr]: https://github.com/junegunn/everything.fzf/blob/main/pr.fzf
+
 fzf starts in a floating pane, in the working directory of the pane it was
 started from, and the selected objects are sent to that pane as if you typed
 them.
